@@ -1,0 +1,113 @@
+---
+title: "API Tokens & Scopes"
+description: "Create tokens, choose scopes, and revoke access."
+icon: "shield-check"
+---
+
+API tokens are how external systems (Zapier, Make, your own backend, an AI agent) act on your ranch's behalf. You create them in **Settings → API Keys**.
+
+## Creating a token
+
+<Steps>
+  <Step title="Name it">
+    Use a descriptive name so you can recognize it later — e.g. `Website booking form` or `Ops automation`.
+  </Step>
+  <Step title="Pick scopes">
+    Select only the scopes the integration needs. A token that only reads contacts should not be granted `bookings.write`. See the full [scope catalog](#scope-catalog) below.
+  </Step>
+  <Step title="(Optional) set an expiry">
+    Short-lived tokens are safer. If the integration is temporary, set an expiry date.
+  </Step>
+  <Step title="Copy the secret once">
+    The full `mxp_live_…` value is displayed a single time. Store it in your secrets manager immediately.
+  </Step>
+</Steps>
+
+## The principle of least privilege
+
+Grant the **minimum** scopes required. If a token is ever leaked, the damage is limited to exactly what you granted. A token scoped to `contacts.read` cannot create bookings, send messages, or delete anything.
+
+<Info>
+  The `*` scope grants **full access** to every current and future capability. Use it only for trusted, first-party server integrations — never for third-party tools.
+</Info>
+
+## How scope enforcement works
+
+Every endpoint declares the scope it needs. When a request arrives:
+
+1. The token is verified (exists, not revoked, not expired)
+2. The endpoint's required scope is checked against the token's scopes
+3. If the scope is missing, the request is rejected with `403`:
+
+```json
+{
+  "error": {
+    "type": "permission_error",
+    "code": "insufficient_scope",
+    "message": "This token is missing the required scope: bookings.write."
+  }
+}
+```
+
+Because scope checks happen **server-side on every request**, a token can never do more than it was granted — even if the caller tries.
+
+## Revoking
+
+Revoke a token from **Settings → API Keys**. It stops working instantly across all endpoints. There is no un-revoke; create a new token if you need one again.
+
+## Scope catalog
+
+| Scope | Grants |
+| --- | --- |
+| `contacts.read` | Read contacts (customers) and their details |
+| `contacts.write` | Create, update, and delete contacts |
+| `pets.read` | Read pets belonging to contacts |
+| `pets.write` | Create, update, and delete pets |
+| `bookings.read` | Read bookings / reservations |
+| `bookings.write` | Create, update, and delete bookings |
+| `services.read` | Read the service catalog and pricing |
+| `services.write` | Create, update, and delete services |
+| `payments.read` | Read payments and invoices |
+| `staff.read` | Read staff / team members |
+| `staff.write` | Create, update, and remove staff / team members |
+| `tags.read` | Read the tag catalog |
+| `tags.write` | Create and delete tags |
+| `notes.read` | Read notes attached to contacts |
+| `notes.write` | Create and delete contact notes |
+| `automations.read` | Read automation workflows |
+| `automations.write` | Activate, pause, and update automation workflows |
+| `forms.read` | Read forms, surveys, and their submissions |
+| `forms.write` | Create, update, and delete forms and surveys |
+| `conversations.read` | Read conversations and their messages |
+| `messages.send` | Send SMS / email messages to contacts |
+| `*` | **Full access** — every scope, current and future |
+
+<Tip>
+  Granting a `.write` scope does **not** automatically grant the matching `.read`. If your integration both reads and writes a resource, grant both scopes (or use `*`).
+</Tip>
+
+## Scope required per endpoint
+
+| Method & path | Required scope |
+| --- | --- |
+| `GET /contacts` · `GET /contacts/{id}` | `contacts.read` |
+| `POST /contacts` · `PATCH /contacts/{id}` · `DELETE /contacts/{id}` | `contacts.write` |
+| `GET /pets` · `GET /pets/{id}` | `pets.read` |
+| `POST /pets` · `PATCH /pets/{id}` · `DELETE /pets/{id}` | `pets.write` |
+| `GET /bookings` · `GET /bookings/{id}` | `bookings.read` |
+| `POST /bookings` · `PATCH /bookings/{id}` · `DELETE /bookings/{id}` | `bookings.write` |
+| `GET /services` · `GET /services/{id}` | `services.read` |
+| `POST /services` · `PATCH /services/{id}` · `DELETE /services/{id}` | `services.write` |
+| `GET /payments` · `GET /payments/{id}` | `payments.read` |
+| `GET /staff` · `GET /staff/{id}` | `staff.read` |
+| `POST /staff` · `PATCH /staff/{id}` · `DELETE /staff/{id}` | `staff.write` |
+| `GET /tags` | `tags.read` |
+| `POST /tags` · `DELETE /tags/{name}` | `tags.write` |
+| `GET /notes` · `GET /notes/{id}` | `notes.read` |
+| `POST /notes` · `DELETE /notes/{id}` | `notes.write` |
+| `GET /automations` · `GET /automations/{id}` | `automations.read` |
+| `PATCH /automations/{id}` | `automations.write` |
+| `GET /forms` · `GET /forms/{id}` · `GET /forms/{id}/submissions` | `forms.read` |
+| `POST /forms` · `PATCH /forms/{id}` · `DELETE /forms/{id}` | `forms.write` |
+| `GET /conversations` · `GET /conversations/{id}/messages` | `conversations.read` |
+| `POST /messages` | `messages.send` |

@@ -1,0 +1,107 @@
+---
+title: "Pagination"
+description: "How list endpoints page through large result sets."
+icon: "list"
+---
+
+Every list endpoint (`GET /contacts`, `GET /bookings`, …) returns a consistent envelope and supports offset-based pagination.
+
+## The list envelope
+
+```json
+{
+  "object": "list",
+  "data": [ /* the items */ ],
+  "limit": 20,
+  "offset": 0,
+  "total": 137,
+  "has_more": true
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `data` | The array of items for this page |
+| `limit` | How many items were requested (1–100, default 20) |
+| `offset` | How many items were skipped |
+| `total` | Total number of matching items |
+| `has_more` | `true` if more items exist beyond this page |
+
+## Requesting a page
+
+Use the `limit` and `offset` query parameters:
+
+```bash
+# First page of 50
+curl ".../api-v1/contacts?limit=50&offset=0" \
+  -H "Authorization: Bearer mxp_live_…"
+
+# Second page
+curl ".../api-v1/contacts?limit=50&offset=50" \
+  -H "Authorization: Bearer mxp_live_…"
+```
+
+<Note>
+  `limit` is capped at **100**. Requesting more returns at most 100 items.
+</Note>
+
+## Iterating all pages
+
+```javascript
+async function* allContacts(token) {
+  let offset = 0;
+  const limit = 100;
+  while (true) {
+    const res = await fetch(
+      `https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts?limit=${limit}&offset=${offset}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const page = await res.json();
+    for (const c of page.data) yield c;
+    if (!page.has_more) break;
+    offset += limit;
+  }
+}
+
+// Usage
+for await (const contact of allContacts("mxp_live_your_token_here")) {
+  console.log(contact.full_name);
+}
+```
+
+```python
+import requests
+
+def all_contacts(token):
+    base = "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1"
+    headers = {"Authorization": f"Bearer {token}"}
+    offset, limit = 0, 100
+    while True:
+        res = requests.get(
+            f"{base}/contacts",
+            headers=headers,
+            params={"limit": limit, "offset": offset},
+        )
+        page = res.json()
+        yield from page["data"]
+        if not page["has_more"]:
+            break
+        offset += limit
+```
+
+## Filtering results
+
+Many list endpoints support additional query parameters to narrow results. For example:
+
+```bash
+# Contacts matching a search query
+GET /contacts?query=smith&limit=50
+
+# Bookings for a specific contact in a date range
+GET /bookings?contact_id=abc123&from=2026-01-01&to=2026-03-31
+
+# Only active services
+GET /services?active=true
+```
+
+See the [API Reference](/api-reference) for each endpoint's supported filters.

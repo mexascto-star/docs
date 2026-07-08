@@ -1,0 +1,79 @@
+---
+title: "Authentication"
+description: "How to authenticate every request with a scoped bearer token."
+icon: "key"
+---
+
+The Mex Pet API authenticates requests with a **bearer token**. Every request must include an `Authorization` header:
+
+```text
+Authorization: Bearer mxp_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Requests without a valid token receive `401 Unauthorized`. Requests with a valid token that lacks the required [scope](/scopes) receive `403 Forbidden`.
+
+## Token format
+
+Tokens look like `mxp_live_` followed by a long random string. Only a one-way hash of the token is stored on our servers — the plaintext is shown **once**, at creation, and can never be retrieved again.
+
+<Warning>
+  Treat tokens like passwords. Never commit them to source control, embed them in a mobile or browser app, or paste them into client-side code. They belong on your **server** only. Anyone with your token can act as your business within the granted scopes.
+</Warning>
+
+## What a token can do
+
+Each token is bound to:
+
+- **One business** — it can only read and write that ranch's data
+- **A set of scopes** — the specific permissions you selected when creating it (e.g. `contacts.read`, `bookings.write`)
+- **An optional expiry** — after which it stops working automatically
+
+## Sending the token
+
+Pass the token in the `Authorization` header on every request:
+
+<CodeGroup>
+
+```bash cURL
+curl https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```javascript Node.js
+const BASE = "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1";
+
+const res = await fetch(`${BASE}/contacts`, {
+  headers: {
+    Authorization: "Bearer mxp_live_your_token_here",
+    "Content-Type": "application/json",
+  },
+});
+```
+
+```python Python
+import requests
+
+BASE = "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1"
+HEADERS = {"Authorization": "Bearer mxp_live_your_token_here"}
+
+res = requests.get(f"{BASE}/contacts", headers=HEADERS)
+```
+
+</CodeGroup>
+
+## Rotating & revoking
+
+If a token is leaked or no longer needed, open **Settings → API Keys** and **revoke** it. Revocation is immediate and permanent. To rotate, create a new token, update your integration, then revoke the old one.
+
+## HTTPS only
+
+All requests must be made over HTTPS. Plain HTTP requests are rejected. Never send tokens over an unencrypted channel.
+
+## Error responses
+
+| Status | Cause |
+| --- | --- |
+| `401 Unauthorized` | Missing, invalid, revoked, or expired token |
+| `403 Forbidden` | Valid token but missing a required scope |
+
+See [Errors](/errors) for the full error shape and all status codes.

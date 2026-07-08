@@ -1,0 +1,105 @@
+---
+title: "Errors"
+description: "Error format, HTTP status codes, and how to handle failures."
+icon: "triangle-exclamation"
+---
+
+The API uses conventional HTTP status codes and always returns a structured error body so you can branch on `error.type` and `error.code`.
+
+## Error shape
+
+```json
+{
+  "error": {
+    "type": "permission_error",
+    "code": "insufficient_scope",
+    "message": "This token is missing the required scope: bookings.write."
+  }
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `type` | Broad category (see below) |
+| `code` | Specific machine-readable code |
+| `message` | Human-readable explanation. Safe to log; do not log tokens. |
+
+## HTTP status codes
+
+| Status | `type` | When |
+| --- | --- | --- |
+| `400` | `invalid_request_error` | Missing or malformed parameters |
+| `401` | `authentication_error` | Missing, invalid, revoked, or expired token |
+| `403` | `permission_error` | The token lacks the required scope |
+| `404` | `not_found` | The resource doesn’t exist in your business, or the route is unknown |
+| `422` | `configuration_error` / `send_error` | Valid request but couldn’t be fulfilled (e.g. no channel configured, provider rejected message) |
+| `429` | `rate_limit_error` | Too many requests — back off and retry |
+| `500` | `api_error` | Something went wrong on our side. Safe to retry with backoff. |
+
+## Common error codes
+
+| `code` | Meaning |
+| --- | --- |
+| `invalid_token` | The token doesn’t match any key |
+| `token_revoked` | The token was revoked in the dashboard |
+| `token_expired` | The token’s expiry date has passed |
+| `insufficient_scope` | The token is missing the scope this endpoint needs |
+| `rate_limited` | Request rate exceeded — see [Rate Limits](/rate-limits) |
+
+## Handling errors
+
+```javascript
+async function apiRequest(url, options) {
+  const res = await fetch(url, options);
+
+  if (!res.ok) {
+    const { error } = await res.json();
+
+    switch (error.code) {
+      case "insufficient_scope":
+        // The token needs additional scopes — update it in Settings → API Keys
+        throw new Error(`Missing scope: ${error.message}`);
+
+      case "token_revoked":
+      case "token_expired":
+        // Prompt for a fresh token
+        throw new Error("Token invalid — please generate a new API key");
+
+      case "rate_limited":
+        // Handled upstream with retry logic
+        throw new Error("Rate limited");
+
+      default:
+        if (res.status >= 500) {
+          // Transient — retry with exponential backoff
+          throw new Error(`Server error: ${error.message}`);
+        }
+        throw new Error(error.message);
+    }
+  }
+
+  return res.json();
+}
+```
+
+```python
+import requests
+from requests.exceptions import HTTPError
+
+def api_request(url, headers, **kwargs):
+    res = requests.request(url=url, headers=headers, **kwargs)
+    if not res.ok:
+        err = res.json().get("error", {})
+        code = err.get("code", "")
+        if code == "insufficient_scope":
+            raise PermissionError(err.get("message"))
+        elif code in ("token_revoked", "token_expired"):
+            raise ValueError("Token invalid — generate a new API key")
+        else:
+            res.raise_for_status()
+    return res.json()
+```
+
+<Note>
+  `5xx` errors and `429` are safe to retry with exponential backoff. Other `4xx` errors indicate a problem with the request itself — retrying won’t help without fixing the underlying issue.
+</Note>
