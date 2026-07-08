@@ -4,68 +4,90 @@ description: "Build on top of Mex Pet — manage contacts, pets, bookings, servi
 icon: "book-open"
 ---
 
-The **Mex Pet API** is a REST API that lets you automate everything your ranch does inside the app: manage contacts and their pets, create and update bookings, read your service catalog, send SMS or email to customers, and more.
+The **Mex Pet API** lets you build on top of everything your ranch does inside the app — programmatically. Sync contacts and their pets, create and update bookings, read payments, manage your team, fire messages, and drive automations, all over a clean REST interface.
 
-It is designed to feel familiar if you have used Stripe, GoHighLevel, or similar platforms:
-
-- **Predictable, resource-oriented URLs** — `/contacts`, `/pets`, `/bookings`, `/services`, `/messages`
-- **JSON everywhere** — all request and response bodies are JSON
-- **Standard HTTP verbs** — `GET`, `POST`, `PATCH`, `DELETE`
-- **Bearer-token auth with scopes** — every token is bound to one business and only the permissions you grant
+It's designed to feel familiar if you've used **Stripe** or **GoHighLevel**:
 
 <CardGroup cols={2}>
+  <Card title="Resource-oriented" icon="cubes">
+    Predictable URLs — `/contacts`, `/bookings`, `/payments`, `/messages`.
+  </Card>
+
+  <Card title="JSON everywhere" icon="brackets-curly">
+    JSON request and response bodies, consistent list envelopes.
+  </Card>
+
+  <Card title="Standard verbs" icon="arrows-repeat">
+    `GET`, `POST`, `PATCH`, `DELETE` with conventional status codes.
+  </Card>
+
+  <Card title="Scoped bearer tokens" icon="shield-check">
+    Every token is bound to one business and only the scopes you grant.
+  </Card>
+</CardGroup>
+
+## Get started
+
+<CardGroup cols={3}>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Make your first authenticated request in under five minutes.
+    Your first authenticated request in under five minutes.
   </Card>
 
   <Card title="Authentication" icon="key" href="/authentication">
     How bearer tokens work and how to send them.
   </Card>
 
-  <Card title="API Tokens & Scopes" icon="shield-check" href="/api-tokens">
-    Create tokens, choose scopes, and revoke access.
-  </Card>
-
   <Card title="API Reference" icon="code" href="/api-reference">
-    Every endpoint, parameter, and response schema.
+    Every endpoint, parameter and response — with a live playground.
   </Card>
 </CardGroup>
 
 ## Base URL
 
-All requests go to a single base URL. Append the resource path to it.
+Every request goes to a single base URL; append the resource path.
 
 ```text
-https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1
+https://mex-pet-app.vercel.app/api/v1
 ```
 
-For example, listing contacts is:
+<Info>
+  This base URL is served by your app and proxied to the API. When you move to a production domain, only this URL changes — your integration code keeps working.
+</Info>
 
-```text
-GET https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts
-```
+For example, listing contacts is `GET https://mex-pet-app.vercel.app/api/v1/contacts`.
+
+## What you can manage
+
+<CardGroup cols={2}>
+  <Card title="Contacts & Pets" icon="paw" href="/api-reference">
+    Customers and the pets that belong to them.
+  </Card>
+
+  <Card title="Bookings & Services" icon="calendar-check" href="/api-reference">
+    Reservations and your priced service catalog.
+  </Card>
+
+  <Card title="Payments" icon="receipt" href="/api-reference">
+    Payments and invoices, searchable by invoice number.
+  </Card>
+
+  <Card title="Staff, Tags & Notes" icon="users" href="/api-reference">
+    Your team, contact tags, and free-text notes.
+  </Card>
+
+  <Card title="Automations & Forms" icon="diagram-project" href="/api-reference">
+    Workflows and forms/surveys with their submissions.
+  </Card>
+
+  <Card title="Messaging" icon="paper-plane" href="/api-reference">
+    Send SMS and email through your configured channels.
+  </Card>
+</CardGroup>
 
 ## Tenancy & isolation
 
-Every token belongs to exactly one business (your ranch). The API automatically scopes every request to that business — you can never read or write another business's data, even by guessing IDs. There is nothing extra to configure.
+Every token belongs to exactly one business (your ranch). The API automatically scopes every request to that business — you can never read or write another business's data, even by guessing IDs. There's nothing extra to configure.
 
 ## Versioning
 
-The current version is **v1**, encoded in the path (`/api-v1`). Breaking changes ship under a new version; additive changes (new fields, new endpoints) may appear within v1 without notice, so write your integration to ignore unknown fields.
-
-## Available resources
-
-| Resource | Description |
-| --- | --- |
-| [Contacts](/api-reference/contacts/list-contacts) | Customers of your ranch |
-| [Pets](/api-reference/pets/list-pets) | Pets that belong to your contacts |
-| [Bookings](/api-reference/bookings/list-bookings) | Reservations for boarding, grooming, daycare, and more |
-| [Services](/api-reference/services/list-services) | Your service catalog and pricing |
-| [Payments](/api-reference/payments/list-payments) | Payments and invoices |
-| [Staff](/api-reference/staff/list-staff) | Your team members |
-| [Tags](/api-reference/tags/list-tags) | Contact segmentation tags |
-| [Notes](/api-reference/notes/list-notes) | Free-text notes attached to contacts |
-| [Automations](/api-reference/automations/list-automations) | Automation workflows |
-| [Forms](/api-reference/forms/list-forms-surveys) | Forms, surveys, and submissions |
-| [Conversations](/api-reference/conversations/list-conversations) | Message threads with contacts |
-| [Messages](/api-reference/messages/send-a-message) | Send SMS and email |
+The current version is **v1**, encoded in the path (`/api/v1`). Breaking changes ship under a new version; additive changes (new fields, new endpoints) can appear within v1 without notice — so write your integration to ignore unknown fields.

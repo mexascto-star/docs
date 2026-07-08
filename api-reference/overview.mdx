@@ -1,0 +1,44 @@
+---
+title: "API Reference"
+description: "Every Mex Pet API endpoint — with parameters, responses and a live playground."
+icon: "code"
+---
+
+This is the complete reference for the **Mex Pet API**. Every endpoint has its own page with parameters, request body, response schema, and a **live playground** you can call directly with your token.
+
+## Base URL
+
+```text
+https://mex-pet-app.vercel.app/api/v1
+```
+
+## Authentication
+
+Every request needs your bearer token in the `Authorization` header:
+
+```text
+Authorization: Bearer mxp_live_…
+```
+
+Create one in **Settings → API Keys** and grant only the [scopes](/api-tokens) it needs. New to the API? Start with the [Quickstart](/quickstart).
+
+## Using the playground
+
+Open any endpoint page, paste your token into the **Authorization** field, fill in the parameters, and hit **Send** to run a real request against your ranch — no extra setup required.
+
+## Resources
+
+| Resource | Endpoints | Scope |
+| --- | --- | --- |
+| [Contacts](/api-reference/contacts/list-contacts) | CRUD \+ search | `contacts.read` / `contacts.write` |
+| [Pets](/api-reference/pets/list-pets) | CRUD | `pets.read` / `pets.write` |
+| [Bookings](/api-reference/bookings/list-bookings) | CRUD \+ filters | `bookings.read` / `bookings.write` |
+| [Services](/api-reference/services/list-services) | CRUD | `services.read` / `services.write` |
+| [Payments](/api-reference/payments/list-payments) | Read-only | `payments.read` |
+| [Staff](/api-reference/staff/list-staff) | CRUD | `staff.read` / `staff.write` |
+| [Tags](/api-reference/tags/list-tags) | List \+ create \+ delete | `tags.read` / `tags.write` |
+| [Notes](/api-reference/notes/list-notes) | List \+ create \+ delete | `notes.read` / `notes.write` |
+| [Automations](/api-reference/automations/list-automations) | Read \+ activate/pause | `automations.read` / `automations.write` |
+| [Forms](/api-reference/forms/list-forms-surveys) | CRUD \+ submissions | `forms.read` / `forms.write` |
+| [Conversations](/api-reference/conversations/list-conversations) | Read threads | `conversations.read` |
+| [Messages](/api-reference/messages/send-a-message) | Send SMS/email | `messages.send` |

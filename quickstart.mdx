@@ -8,10 +8,10 @@ icon: "rocket"
 
 <Steps>
   <Step title="Open the dashboard">
-    Sign in at [app.mexpet.app](https://app.mexpet.app) and navigate to **Settings → API Keys**.
+    Sign in at [mex-pet-app.vercel.app](https://mex-pet-app.vercel.app) and navigate to **Settings → API Keys**.
   </Step>
   <Step title="Create a token">
-    Click **Create token**, give it a descriptive name (e.g. `Zapier production`), and choose the [scopes](/scopes) it needs. Grant only the permissions the integration actually requires.
+    Click **Create token**, give it a descriptive name (e.g. `Zapier production`), and choose the [scopes](/api-tokens#scope-catalog) it needs. Grant only what the integration requires.
   </Step>
   <Step title="Copy the secret">
     The full token (`mxp_live_…`) is shown **once**. Copy it immediately and store it somewhere safe — you cannot view it again. If you lose it, revoke it and create a new one.
@@ -25,13 +25,13 @@ Send the token as a bearer token in the `Authorization` header.
 <CodeGroup>
 
 ```bash cURL
-curl https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts \
+curl https://mex-pet-app.vercel.app/api/v1/contacts \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
 
 ```javascript Node.js
 const res = await fetch(
-  "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts",
+  "https://mex-pet-app.vercel.app/api/v1/contacts",
   { headers: { Authorization: "Bearer mxp_live_your_token_here" } }
 );
 const { data } = await res.json();
@@ -42,7 +42,7 @@ console.log(data);
 import requests
 
 res = requests.get(
-    "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts",
+    "https://mex-pet-app.vercel.app/api/v1/contacts",
     headers={"Authorization": "Bearer mxp_live_your_token_here"},
 )
 print(res.json()["data"])
@@ -77,7 +77,7 @@ A successful response looks like:
 ## 3. Create a contact
 
 ```bash cURL
-curl -X POST https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts \
+curl -X POST https://mex-pet-app.vercel.app/api/v1/contacts \
   -H "Authorization: Bearer mxp_live_your_token_here" \
   -H "Content-Type: application/json" \
   -d '{ "full_name": "John Smith", "email": "john@example.com", "phone": "+15125550199" }'
@@ -86,14 +86,14 @@ curl -X POST https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contac
 ## 4. Send a message
 
 ```bash cURL
-curl -X POST https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/messages \
+curl -X POST https://mex-pet-app.vercel.app/api/v1/messages \
   -H "Authorization: Bearer mxp_live_your_token_here" \
   -H "Content-Type: application/json" \
   -d '{ "channel": "sms", "to": "+15125550199", "message": "Your pup is ready for pickup! 🐾" }'
 ```
 
 <Check>
-  You're live. Head to the [API Reference](/api-reference) for every endpoint, or read [Authentication](/authentication) and [Scopes](/scopes) next.
+  You're live. Head to the [API Reference](/api-reference/contacts/list-contacts) for every endpoint, or read [Authentication](/authentication) and [API Tokens & Scopes](/api-tokens) next.
 </Check>
 
 ## Next steps
@@ -107,8 +107,8 @@ curl -X POST https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/messag
     Understand the principle of least privilege and manage token lifecycle.
   </Card>
 
-  <Card title="Pagination" icon="list" href="/pagination">
-    Efficiently iterate through large result sets.
+  <Card title="Idempotency" icon="arrows-rotate" href="/idempotency">
+    Safely retry writes without creating duplicates.
   </Card>
 
   <Card title="Errors" icon="triangle-exclamation" href="/errors">
