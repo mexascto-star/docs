@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mex Pet API",
+  "name": "Mex Pet",
   "colors": {
     "primary": "#4D7C0F",
-    "light": "#A3E635",
-    "dark": "#3F6212"
+    "light": "#BEF264",
+    "dark": "#111111"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -33,21 +33,141 @@
         "pages": [
           "pagination",
           "errors",
-          "rate-limits"
+          "rate-limits",
+          "idempotency"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api-reference/overview",
+          {
+            "group": "Contacts",
+            "pages": [
+              "api-reference/contacts/list-contacts",
+              "api-reference/contacts/create-a-contact",
+              "api-reference/contacts/retrieve-a-contact",
+              "api-reference/contacts/update-a-contact",
+              "api-reference/contacts/delete-a-contact"
+            ]
+          },
+          {
+            "group": "Pets",
+            "pages": [
+              "api-reference/pets/list-pets",
+              "api-reference/pets/create-a-pet",
+              "api-reference/pets/retrieve-a-pet",
+              "api-reference/pets/update-a-pet",
+              "api-reference/pets/delete-a-pet"
+            ]
+          },
+          {
+            "group": "Bookings",
+            "pages": [
+              "api-reference/bookings/list-bookings",
+              "api-reference/bookings/create-a-booking",
+              "api-reference/bookings/retrieve-a-booking",
+              "api-reference/bookings/update-a-booking",
+              "api-reference/bookings/delete-a-booking"
+            ]
+          },
+          {
+            "group": "Services",
+            "pages": [
+              "api-reference/services/list-services",
+              "api-reference/services/create-a-service",
+              "api-reference/services/retrieve-a-service",
+              "api-reference/services/update-a-service",
+              "api-reference/services/delete-a-service"
+            ]
+          },
+          {
+            "group": "Payments",
+            "pages": [
+              "api-reference/payments/list-payments",
+              "api-reference/payments/retrieve-a-payment"
+            ]
+          },
+          {
+            "group": "Staff",
+            "pages": [
+              "api-reference/staff/list-staff",
+              "api-reference/staff/create-a-staff-member",
+              "api-reference/staff/retrieve-a-staff-member",
+              "api-reference/staff/update-a-staff-member",
+              "api-reference/staff/remove-a-staff-member"
+            ]
+          },
+          {
+            "group": "Tags",
+            "pages": [
+              "api-reference/tags/list-tags",
+              "api-reference/tags/create-a-tag",
+              "api-reference/tags/delete-a-tag"
+            ]
+          },
+          {
+            "group": "Notes",
+            "pages": [
+              "api-reference/notes/list-notes",
+              "api-reference/notes/create-a-note",
+              "api-reference/notes/retrieve-a-note",
+              "api-reference/notes/delete-a-note"
+            ]
+          },
+          {
+            "group": "Automations",
+            "pages": [
+              "api-reference/automations/list-automations",
+              "api-reference/automations/retrieve-an-automation",
+              "api-reference/automations/update-an-automation"
+            ]
+          },
+          {
+            "group": "Forms",
+            "pages": [
+              "api-reference/forms/list-forms",
+              "api-reference/forms/create-a-form",
+              "api-reference/forms/retrieve-a-form",
+              "api-reference/forms/update-a-form",
+              "api-reference/forms/delete-a-form",
+              "api-reference/forms/list-form-submissions"
+            ]
+          },
+          {
+            "group": "Conversations",
+            "pages": [
+              "api-reference/conversations/list-conversations",
+              "api-reference/conversations/list-conversation-messages"
+            ]
+          },
+          {
+            "group": "Messages",
+            "pages": [
+              "api-reference/messages/send-a-message"
+            ]
+          }
         ]
       }
     ]
   },
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "dark": "/logo/dark.svg",
+    "href": "https://mex-pet-app.vercel.app"
   },
   "navbar": {
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mexpet.app"
-    }
+      "label": "Open App",
+      "href": "https://mex-pet-app.vercel.app"
+    },
+    "links": [
+      {
+        "href": "mailto:info@mexas-ai.com",
+        "label": "Support"
+      }
+    ]
   },
   "contextual": {
     "options": [
@@ -63,8 +183,44 @@
   },
   "footer": {
     "socials": {
-      "website": "https://mexpet.app"
+      "website": "https://mex-pet-app.vercel.app"
+    },
+    "links": [
+      {
+        "header": "Resources",
+        "items": [
+          {
+            "label": "API Reference",
+            "href": "/api-reference"
+          },
+          {
+            "label": "Quickstart",
+            "href": "/quickstart"
+          },
+          {
+            "label": "Authentication",
+            "href": "/authentication"
+          }
+        ]
+      }
+    ]
+  },
+  "description": "The Mex Pet REST API — contacts, pets, bookings, services, payments and messaging.",
+  "appearance": {
+    "default": "dark"
+  },
+  "background": {
+    "decoration": "grid"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Inter"
+    },
+    "body": {
+      "family": "Inter"
     }
   },
-  "description": "REST API for contacts, pets, bookings, services, and messaging — automate everything your ranch does."
+  "api": {
+    "openapi": "openapi.json"
+  }
 }

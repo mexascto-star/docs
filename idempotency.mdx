@@ -1,0 +1,90 @@
+---
+title: "Idempotency"
+description: "Safely retry write requests without creating duplicates."
+icon: "arrows-rotate"
+---
+
+Network requests sometimes fail after the server has already processed them — the connection drops before you get the response. Retrying blindly could create a **duplicate** booking, contact, or message. Idempotency keys make retries safe.
+
+## How it works
+
+Send an **`Idempotency-Key`** header with any `POST` request — a unique string you generate (a UUID is ideal):
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/bookings \
+  -H "Authorization: Bearer mxp_live_…" \
+  -H "Idempotency-Key: b1f9c2e0-7a3d-4c1e-9f8a-2b6d5e4c3a10" \
+  -H "Content-Type: application/json" \
+  -d '{ "contact_id": "…", "check_in_date": "2026-08-01" }'
+```
+
+- The **first** request with a given key runs normally and its response is saved.
+- Any **later** request with the **same key** returns that saved response instead of running again — no duplicate is created.
+- Replayed responses carry an **`Idempotent-Replayed: true`** response header.
+
+Keys are scoped to your business and remembered for **24 hours**.
+
+## When to use it
+
+Use idempotency keys on any `POST` your code might retry — especially:
+
+- Creating a booking, contact, or staff member
+- **Sending a message** — sending the same SMS twice is exactly what this prevents
+- Any write operation inside a retry loop or a queue processor
+
+Generate a **fresh key per logical operation**. Reusing a key for a _different_ request just replays the first response — don't reuse keys across unrelated calls.
+
+## Example — safe retry in Node.js
+
+```javascript
+import { randomUUID } from "crypto";
+
+async function createBooking(payload) {
+  const key = randomUUID();               // one key for this booking attempt
+  return requestWithRetry("/bookings", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "Idempotency-Key": key,             // same key on every retry
+    },
+    body: JSON.stringify(payload),
+  });
+}
+```
+
+```python
+import uuid
+import time
+import requests
+
+def create_booking(payload, token, max_attempts=5):
+    key = str(uuid.uuid4())          # one key for this attempt
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Idempotency-Key": key,      # same key on every retry
+    }
+    for attempt in range(max_attempts):
+        res = requests.post(
+            "https://mex-pet-app.vercel.app/api/v1/bookings",
+            headers=headers,
+            json=payload,
+        )
+        if res.status_code == 429 and attempt < max_attempts - 1:
+            time.sleep(2 ** attempt)
+            continue
+        return res.json()
+```
+
+## Checking for a replay
+
+```javascript
+const res = await fetch("/bookings", { method: "POST", headers, body });
+const wasReplayed = res.headers.get("Idempotent-Replayed") === "true";
+const booking = await res.json();
+```
+
+<Tip>
+  Only `POST` requests use idempotency keys. `GET` is already safe to retry, and `PATCH`/`DELETE` on a specific id are naturally idempotent.
+</Tip>
