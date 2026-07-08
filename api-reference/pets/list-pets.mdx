@@ -4,18 +4,27 @@ description: "Returns a paginated list of pets. Requires the pets.read scope."
 openapi: "GET /pets"
 ---
 
-Returns all pets in your ranch, optionally filtered by owner or animal type. Use `contact_id` to fetch all pets for a specific customer in a single call.
+Returns all pets in your ranch. Use `contact_id` to fetch every pet for a specific customer in one call.
 
 **Required scope:** `pets.read`
 
-## Filters
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /pets
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
 
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `limit` | integer | Items to return, 1–100 (default 20) |
 | `offset` | integer | Items to skip for pagination |
 | `contact_id` | string | Only pets belonging to this contact |
-| `type` | string | Animal type filter (e.g. `dog`, `cat`, `bird`) |
+| `type` | string | Animal type filter: `dog`, `cat`, `bird`, etc. |
 | `query` | string | Free-text search over name and breed |
 
 ## Example
@@ -24,6 +33,8 @@ Returns all pets in your ranch, optionally filtered by owner or animal type. Use
 curl "https://mex-pet-app.vercel.app/api/v1/pets?contact_id=usr_6f1c3d" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

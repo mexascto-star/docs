@@ -4,9 +4,18 @@ description: "Retrieves a single payment by ID. Requires the payments.read scope
 openapi: "GET /payments/{id}"
 ---
 
-Retrieves a single payment by ID. Payments are read-only — use this to look up invoice details or confirm payment status before issuing a receipt.
+Retrieves a payment by ID. Use this to confirm payment status or pull invoice details.
 
 **Required scope:** `payments.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /payments/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -14,6 +23,8 @@ Retrieves a single payment by ID. Payments are read-only — use this to look up
 curl https://mex-pet-app.vercel.app/api/v1/payments/pay_jj0e1f \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

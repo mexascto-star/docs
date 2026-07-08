@@ -8,12 +8,23 @@ Retrieves a form or survey by ID including its field definitions and settings.
 
 **Required scope:** `forms.read`
 
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /forms/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
+
 ## Example
 
 ```bash
 curl https://mex-pet-app.vercel.app/api/v1/forms/frm_oo5j6k \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

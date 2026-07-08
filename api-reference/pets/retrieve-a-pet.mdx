@@ -4,13 +4,27 @@ description: "Retrieves a single pet by ID. Requires the pets.read scope."
 openapi: "GET /pets/{id}"
 ---
 
-Retrieves a pet by ID. The response embeds the owner's contact details (`id`, `full_name`, `email`, `phone`) so you don't need a second request to identify who the pet belongs to.
+Retrieves a pet by ID. The response embeds the owner's contact details so you don't need a second request to identify who the pet belongs to.
 
 **Required scope:** `pets.read`
 
-## Embedded relationship
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
 
-The `contact` field in the response contains a summary of the owning contact:
+## Request
+
+```bash
+GET /pets/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/pets/pet_aa1b2c \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
 
 ```json
 {
@@ -38,11 +52,4 @@ The `contact` field in the response contains a summary of the owning contact:
 }
 ```
 
-## Example
-
-```bash
-curl https://mex-pet-app.vercel.app/api/v1/pets/pet_aa1b2c \
-  -H "Authorization: Bearer mxp_live_your_token_here"
-```
-
-A `404` is returned if the pet does not exist in your business.
+The `contact` field is embedded in the response — the owner's ID, name, email, and phone.

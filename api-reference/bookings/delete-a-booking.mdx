@@ -4,9 +4,18 @@ description: "Permanently deletes a booking. Requires the bookings.write scope."
 openapi: "DELETE /bookings/{id}"
 ---
 
-Permanently removes a booking from your ranch. Consider updating `status` to `cancelled` instead if you need to keep a record.
+Permanently removes a booking. Consider updating `status` to `cancelled` instead to preserve the record.
 
 **Required scope:** `bookings.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+DELETE /bookings/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -14,6 +23,8 @@ Permanently removes a booking from your ranch. Consider updating `status` to `ca
 curl -X DELETE https://mex-pet-app.vercel.app/api/v1/bookings/bkg_dd4e5f \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

@@ -4,13 +4,27 @@ description: "Retrieves a single service by ID. Requires the services.read scope
 openapi: "GET /services/{id}"
 ---
 
-Retrieves a service by ID. For packages (`is_package: true`), the response includes a `sub_services` array containing all child services that make up the bundle.
+Retrieves a service by ID. For packages (`is_package: true`), the response includes a `sub_services` array with all child services that make up the bundle.
 
 **Required scope:** `services.read`
 
-## Embedded sub-services
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
 
-When a service is a package, its constituent services are embedded in the response:
+## Request
+
+```bash
+GET /services/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/services/svc_gg7b8c \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
 
 ```json
 {
@@ -51,9 +65,4 @@ When a service is a package, its constituent services are embedded in the respon
 }
 ```
 
-## Example
-
-```bash
-curl https://mex-pet-app.vercel.app/api/v1/services/svc_gg7b8c \
-  -H "Authorization: Bearer mxp_live_your_token_here"
-```
+The `sub_services` array is empty `[]` for non-package services.

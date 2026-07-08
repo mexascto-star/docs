@@ -4,21 +4,29 @@ description: "Creates a free-text note on a contact. Requires the notes.write sc
 openapi: "POST /notes"
 ---
 
-Adds a free-text note to a contact's record. Notes are useful for capturing staff observations, special handling instructions, or customer preferences that don't fit into structured fields.
+Adds a free-text note to a contact's record. Great for capturing staff observations, special handling instructions, or customer preferences.
 
 **Required scope:** `notes.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+POST /notes
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
 
 ## Body fields
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `contact_id` | string | ✅ | ID of the contact. Must be an existing contact in your business. |
-| `body` | string | ✅ | The note text (no length limit) |
-
-## Validation
+| `body` | string | ✅ | The note text |
 
 <Warning>
-  `contact_id` must be an existing contact in your business. An invalid ID returns `400 invalid_request_error`.
+  `contact_id` must be an existing contact in your business. An invalid ID returns `400`.
 </Warning>
 
 ## Example
@@ -29,16 +37,18 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/notes \
   -H "Content-Type: application/json" \
   -d '{
     "contact_id": "usr_6f1c3d",
-    "body": "Jane mentioned she will be traveling internationally in September — may need extended boarding."
+    "body": "Jane traveling internationally in September — may need extended boarding."
   }'
 ```
+
+## Response `201`
 
 ```json
 {
   "id": "note_ll2g3h",
   "object": "note",
   "contact_id": "usr_6f1c3d",
-  "body": "Jane mentioned she will be traveling internationally in September — may need extended boarding.",
+  "body": "Jane traveling internationally in September — may need extended boarding.",
   "created_by": null,
   "created_at": "2026-07-09T20:00:00.000Z"
 }

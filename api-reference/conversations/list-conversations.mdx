@@ -4,9 +4,25 @@ description: "Returns a paginated list of message threads with your contacts. Re
 openapi: "GET /conversations"
 ---
 
-Returns all conversation threads between your ranch and its contacts. Conversations are read-only — they are created automatically when a contact sends an inbound message or when you send one via `POST /messages`. Use `GET /conversations/{id}/messages` to fetch the full message history for a thread.
+Returns all conversation threads between your ranch and its contacts. Conversations are read-only and are created automatically when messages are sent or received. Use `GET /conversations/{id}/messages` to fetch the full message history for a thread.
 
 **Required scope:** `conversations.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /conversations
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
 
 ## Conversation object fields
 
@@ -14,11 +30,10 @@ Returns all conversation threads between your ranch and its contacts. Conversati
 | --- | --- |
 | `id` | Unique conversation ID |
 | `customer_id` | The contact this thread belongs to |
-| `staff_id` | Assigned staff member, if any |
+| `staff_id` | Assigned staff member (if any) |
 | `channel` | `sms` or `email` |
 | `last_message` | Preview of the most recent message |
 | `last_message_time` | Timestamp of the most recent message |
-| `created_at` | When the conversation was first created |
 
 ## Example
 
@@ -26,6 +41,8 @@ Returns all conversation threads between your ranch and its contacts. Conversati
 curl https://mex-pet-app.vercel.app/api/v1/conversations \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

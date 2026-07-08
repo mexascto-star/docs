@@ -4,11 +4,20 @@ description: "Returns your service catalog. Requires the services.read scope."
 openapi: "GET /services"
 ---
 
-Returns your priced service catalog. Use `active=true` to get only the services currently available for booking. Filter by `category` to build category-specific views (e.g. show only grooming services in a booking form).
+Returns your priced service catalog. Use `active=true` to get only services currently available for booking.
 
 **Required scope:** `services.read`
 
-## Filters
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /services
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
 
 | Parameter | Type | Description |
 | --- | --- | --- |
@@ -24,6 +33,8 @@ Returns your priced service catalog. Use `active=true` to get only the services 
 curl "https://mex-pet-app.vercel.app/api/v1/services?active=true&category=boarding" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

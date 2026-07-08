@@ -4,9 +4,19 @@ description: "Set the automation status to active, paused, or draft. Requires th
 openapi: "PATCH /automations/{id}"
 ---
 
-Changes the status of an automation workflow or renames it. This is the primary way to turn automations on and off programmatically — for example, pausing a welcome SMS sequence during a scheduled maintenance window.
+Changes the status of an automation or renames it. This is how you turn automations on and off programmatically — for example, pausing a welcome SMS sequence during a maintenance window.
 
 **Required scope:** `automations.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+PATCH /automations/{id}
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
 
 ## Body fields
 
@@ -17,14 +27,14 @@ Changes the status of an automation workflow or renames it. This is the primary 
 
 ## Status transitions
 
-| From | To | Effect |
-| --- | --- | --- |
-| `draft` | `active` | Automation begins firing on trigger events |
-| `active` | `paused` | Trigger events are ignored until re-activated |
-| `paused` | `active` | Resumes firing |
-| Any | `draft` | Returns to draft — use before making structural edits in the app |
+| From → To | Effect |
+| --- | --- |
+| `draft` → `active` | Begins firing on trigger events |
+| `active` → `paused` | Trigger events ignored until re-activated |
+| `paused` → `active` | Resumes firing |
+| Any → `draft` | Returns to draft — use before editing in the app |
 
-## Example — pause an automation
+## Example — pause
 
 ```bash
 curl -X PATCH https://mex-pet-app.vercel.app/api/v1/automations/auto_mm3h4i \
@@ -32,6 +42,8 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/automations/auto_mm3h4i \
   -H "Content-Type: application/json" \
   -d '{ "status": "paused" }'
 ```
+
+## Response `200`
 
 ```json
 {

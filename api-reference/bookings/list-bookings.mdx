@@ -4,11 +4,20 @@ description: "Returns a paginated list of bookings. Requires the bookings.read s
 openapi: "GET /bookings"
 ---
 
-Returns bookings across your ranch, with rich filtering options. Use `from` and `to` to scope to a date range, `status` to build operational views (e.g. today's check-ins), and `contact_id` to pull all reservations for a single customer.
+Returns bookings across your ranch with rich filtering. Use `from`/`to` to scope to a date range, `status` to build operational views, and `contact_id` to pull a customer's reservation history.
 
 **Required scope:** `bookings.read`
 
-## Filters
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /bookings
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
 
 | Parameter | Type | Description |
 | --- | --- | --- |
@@ -17,8 +26,8 @@ Returns bookings across your ranch, with rich filtering options. Use `from` and 
 | `contact_id` | string | Filter to a specific customer |
 | `status` | string | `pending`, `in_progress`, `completed`, `cancelled` |
 | `service_type` | string | `boarding`, `grooming`, `daycare`, `training` |
-| `from` | date (YYYY-MM-DD) | Check-in date on or after |
-| `to` | date (YYYY-MM-DD) | Check-in date on or before |
+| `from` | date | Check-in date on or after (YYYY-MM-DD) |
+| `to` | date | Check-in date on or before (YYYY-MM-DD) |
 
 ## Example — today's pending bookings
 
@@ -26,6 +35,8 @@ Returns bookings across your ranch, with rich filtering options. Use `from` and 
 curl "https://mex-pet-app.vercel.app/api/v1/bookings?status=pending&from=2026-07-09&to=2026-07-09" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

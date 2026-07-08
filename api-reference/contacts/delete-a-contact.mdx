@@ -4,13 +4,22 @@ description: "Permanently deletes a contact. Requires the contacts.write scope."
 openapi: "DELETE /contacts/{id}"
 ---
 
-Permanently removes a contact from your ranch. This action cannot be undone. Associated pets, bookings, and notes are not automatically deleted — remove them first if needed.
+Permanently removes a contact from your ranch. This action is immediate and cannot be undone.
 
 **Required scope:** `contacts.write`
 
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
 <Warning>
-  Deletion is permanent and immediate. There is no soft-delete or recovery.
+  Deletion is permanent. Associated pets, bookings, and notes are not automatically removed — clean those up first if needed.
 </Warning>
+
+## Request
+
+```bash
+DELETE /contacts/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -18,6 +27,8 @@ Permanently removes a contact from your ranch. This action cannot be undone. Ass
 curl -X DELETE https://mex-pet-app.vercel.app/api/v1/contacts/usr_9a2b4c \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {
@@ -27,4 +38,8 @@ curl -X DELETE https://mex-pet-app.vercel.app/api/v1/contacts/usr_9a2b4c \
 }
 ```
 
-A `404` is returned if the contact does not exist in your business.
+## Error responses
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `404` | `not_found` | Contact does not exist in your business |

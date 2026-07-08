@@ -4,9 +4,18 @@ description: "Permanently deletes a pet record. Requires the pets.write scope."
 openapi: "DELETE /pets/{id}"
 ---
 
-Permanently removes a pet record from your ranch. This action cannot be undone.
+Permanently removes a pet record from your ranch.
 
 **Required scope:** `pets.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+DELETE /pets/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -15,6 +24,8 @@ curl -X DELETE https://mex-pet-app.vercel.app/api/v1/pets/pet_bb2c3d \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
 
+## Response `200`
+
 ```json
 {
   "id": "pet_bb2c3d",
@@ -22,5 +33,3 @@ curl -X DELETE https://mex-pet-app.vercel.app/api/v1/pets/pet_bb2c3d \
   "deleted": true
 }
 ```
-
-A `404` is returned if the pet does not exist in your business.

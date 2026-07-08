@@ -4,11 +4,20 @@ description: "Returns your team members. Requires the staff.read scope."
 openapi: "GET /staff"
 ---
 
-Returns all team members in your ranch. Filter by `staff_type` to get workers, drivers, or receptionists separately, or use `active=true` to get only currently active members.
+Returns all team members in your ranch. Filter by `staff_type` to get workers, drivers, or receptionists separately.
 
 **Required scope:** `staff.read`
 
-## Filters
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /staff
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
 
 | Parameter | Type | Description |
 | --- | --- | --- |
@@ -23,6 +32,8 @@ Returns all team members in your ranch. Filter by `staff_type` to get workers, d
 curl "https://mex-pet-app.vercel.app/api/v1/staff?staff_type=worker&active=true" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

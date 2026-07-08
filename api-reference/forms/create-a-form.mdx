@@ -4,9 +4,19 @@ description: "Creates a new form or survey. Requires the forms.write scope."
 openapi: "POST /forms"
 ---
 
-Creates a form or survey. Use `type: "form"` for intake forms, waivers, or health questionnaires. Use `type: "survey"` for post-stay feedback collection.
+Creates a form or survey. Use `type: "form"` for intake forms and waivers, `type: "survey"` for post-stay feedback.
 
 **Required scope:** `forms.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+POST /forms
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
 
 ## Body fields
 
@@ -14,7 +24,7 @@ Creates a form or survey. Use `type: "form"` for intake forms, waivers, or healt
 | --- | --- | --- | --- |
 | `title` | string | ✅ | Form title |
 | `type` | string | — | `form` (default) or `survey` |
-| `fields` | array | — | Field definitions (structure depends on form builder) |
+| `fields` | array | — | Field definitions |
 | `settings` | object | — | Display and behavior settings |
 | `status` | string | — | `draft` (default) or `published` |
 
@@ -30,6 +40,8 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/forms \
     "status": "published"
   }'
 ```
+
+## Response `201`
 
 ```json
 {

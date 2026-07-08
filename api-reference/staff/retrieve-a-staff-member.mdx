@@ -4,9 +4,18 @@ description: "Retrieves a single staff member by ID. Requires the staff.read sco
 openapi: "GET /staff/{id}"
 ---
 
-Retrieves a staff member by ID. Use this to verify assignment details before updating a booking's `assigned_staff_id`.
+Retrieves a staff member by ID.
 
 **Required scope:** `staff.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /staff/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -14,6 +23,8 @@ Retrieves a staff member by ID. Use this to verify assignment details before upd
 curl https://mex-pet-app.vercel.app/api/v1/staff/stf_ee5f6a \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

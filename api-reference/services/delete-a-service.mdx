@@ -4,9 +4,18 @@ description: "Permanently deletes a service. Requires the services.write scope."
 openapi: "DELETE /services/{id}"
 ---
 
-Permanently removes a service from your catalog. Consider setting `is_active: false` instead to hide it without losing history.
+Permanently removes a service. Consider setting `is_active: false` instead to hide it without losing history.
 
 **Required scope:** `services.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+DELETE /services/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -14,6 +23,8 @@ Permanently removes a service from your catalog. Consider setting `is_active: fa
 curl -X DELETE https://mex-pet-app.vercel.app/api/v1/services/svc_gg7b8c \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

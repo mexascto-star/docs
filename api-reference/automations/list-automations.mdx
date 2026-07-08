@@ -4,15 +4,24 @@ description: "Returns a paginated list of automation workflows. Requires the aut
 openapi: "GET /automations"
 ---
 
-Returns all automation workflows in your ranch. Use this to audit which automations are running, paused, or in draft state.
+Returns all automation workflows in your ranch. Use this to audit which automations are active, paused, or in draft.
 
 **Required scope:** `automations.read`
 
-## Automation status values
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /automations
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Status values
 
 | Status | Meaning |
 | --- | --- |
-| `active` | Running — fires when the trigger condition is met |
+| `active` | Running — fires when trigger condition is met |
 | `paused` | Temporarily stopped — trigger events are ignored |
 | `draft` | Not yet activated |
 
@@ -22,6 +31,8 @@ Returns all automation workflows in your ranch. Use this to audit which automati
 curl https://mex-pet-app.vercel.app/api/v1/automations \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

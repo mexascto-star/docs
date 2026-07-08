@@ -4,30 +4,38 @@ description: "Creates a pet record linked to a contact. Requires the pets.write 
 openapi: "POST /pets"
 ---
 
-Creates a pet and links it to an existing contact (owner). A pet cannot exist without a valid owner — if the `contact_id` doesn't match a contact in your ranch, the request is rejected.
+Creates a pet and links it to an existing contact (owner). A pet cannot exist without a valid owner.
 
 **Required scope:** `pets.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+POST /pets
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
 
 ## Body fields
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `contact_id` | string | ✅ | ID of the owning contact. Must be an existing contact in your business. |
+| `contact_id` | string | ✅ | ID of the owning contact. Must exist in your business. |
 | `name` | string | ✅ | Pet's name |
 | `type` | string | — | Animal type: `dog`, `cat`, `bird`, etc. |
 | `breed` | string | — | Breed |
-| `age` | string | — | Age (free-form, e.g. `"3"`, `"18 months"`) |
-| `weight` | string | — | Weight (free-form, e.g. `"65 lbs"`) |
+| `age` | string | — | Age (free-form: `"3"`, `"18 months"`) |
+| `weight` | string | — | Weight (free-form: `"65 lbs"`) |
 | `gender` | string | — | `male` or `female` |
 | `allergies` | string | — | Known allergies |
 | `health_notes` | string | — | Free-text health information |
-| `is_vaccinated` | boolean | — | Whether vaccinations are up to date |
+| `is_vaccinated` | boolean | — | Whether vaccinations are current |
 | `status` | string | — | `active` (default) or `inactive` |
 
-## Validation
-
 <Warning>
-  `contact_id` must be an existing contact in your business. Supplying an unknown or cross-business ID returns `400 invalid_request_error` with the message: _"contact\_id does not match a contact in your business."_
+  `contact_id` must be an existing contact in your business. An unknown ID returns `400`: _"contact\_id does not match a contact in your business."_
 </Warning>
 
 ## Example
@@ -45,10 +53,11 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/pets \
     "age": "2",
     "weight": "55 lbs",
     "gender": "male",
-    "is_vaccinated": true,
-    "health_notes": "No known allergies"
+    "is_vaccinated": true
   }'
 ```
+
+## Response `201`
 
 ```json
 {
@@ -62,7 +71,7 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/pets \
   "weight": "55 lbs",
   "gender": "male",
   "allergies": null,
-  "health_notes": "No known allergies",
+  "health_notes": null,
   "is_vaccinated": true,
   "status": "active",
   "image_url": null,

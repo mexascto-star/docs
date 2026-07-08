@@ -4,11 +4,21 @@ description: "Updates a form or survey. Requires the forms.write scope."
 openapi: "PATCH /forms/{id}"
 ---
 
-Updates a form or survey. Use this to publish a draft, rename a form, or update its settings.
+Updates a form or survey. Use this to publish a draft, rename it, or update settings.
 
 **Required scope:** `forms.write`
 
-## Example — publish a draft form
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+PATCH /forms/{id}
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
+
+## Example — publish a draft
 
 ```bash
 curl -X PATCH https://mex-pet-app.vercel.app/api/v1/forms/frm_pp6k7l \
@@ -16,6 +26,8 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/forms/frm_pp6k7l \
   -H "Content-Type: application/json" \
   -d '{ "status": "published", "title": "Post-Stay Satisfaction Survey" }'
 ```
+
+## Response `200`
 
 ```json
 {

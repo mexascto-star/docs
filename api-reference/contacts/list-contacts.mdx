@@ -4,11 +4,20 @@ description: "Returns a paginated list of contacts. Requires the contacts.read s
 openapi: "GET /contacts"
 ---
 
-Use this endpoint to browse, search, or filter the customers in your ranch. Results are paginated — use `limit` and `offset` to page through large lists, and combine filters to narrow results.
+Use this endpoint to browse, search, or filter the customers in your ranch. Combine filters to narrow results — for example, find all VIP customers by tag, or search by name.
 
 **Required scope:** `contacts.read`
 
-## Filters
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /contacts
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
 
 | Parameter | Type | Description |
 | --- | --- | --- |
@@ -19,16 +28,14 @@ Use this endpoint to browse, search, or filter the customers in your ranch. Resu
 | `tag` | string | Only contacts that have this tag |
 | `query` | string | Free-text search over name, email, and phone |
 
-## Tenant isolation
-
-All results are automatically scoped to your ranch. You can never retrieve contacts belonging to another business, even by guessing IDs.
-
 ## Example
 
 ```bash
 curl "https://mex-pet-app.vercel.app/api/v1/contacts?query=smith&limit=2" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response
 
 ```json
 {
@@ -40,8 +47,11 @@ curl "https://mex-pet-app.vercel.app/api/v1/contacts?query=smith&limit=2" \
       "full_name": "Jane Smith",
       "email": "jane@example.com",
       "phone": "+15125550123",
+      "address": "123 Main St",
       "city": "Austin",
       "state": "TX",
+      "zip_code": "78701",
+      "country": "US",
       "membership_tier": "gold",
       "tags": ["vip", "dog-owner"],
       "loyalty_points": 240,
@@ -55,3 +65,10 @@ curl "https://mex-pet-app.vercel.app/api/v1/contacts?query=smith&limit=2" \
   "has_more": false
 }
 ```
+
+## Error responses
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `401` | `authentication_error` | Missing or invalid token |
+| `403` | `permission_error` | Token missing `contacts.read` scope |

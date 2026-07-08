@@ -4,22 +4,32 @@ description: "Creates a new service in your catalog. Requires the services.write
 openapi: "POST /services"
 ---
 
-Adds a new service to your catalog. Set `is_package: true` to mark it as a bundle (its child services are managed via `parent_id` on each child service).
+Adds a new service to your catalog. Set `is_package: true` to mark it as a bundle.
 
 **Required scope:** `services.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+POST /services
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
 
 ## Body fields
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `title` | string | ✅ | Service name |
-| `description` | string | — | Full description shown to staff and customers |
+| `description` | string | — | Full description |
 | `category` | string | — | `boarding`, `grooming`, `daycare`, `training`, `addon`, `retail` |
-| `base_price` | number | — | Base price in dollars |
+| `base_price` | number | — | Price in dollars |
 | `price_type` | string | — | `nightly`, `fixed`, `tiered` |
 | `price_unit` | string | — | `per_night`, `per_mile`, `fixed` |
-| `is_active` | boolean | — | Whether available for booking (default `true`) |
-| `is_package` | boolean | — | Whether this is a package that bundles sub-services |
+| `is_active` | boolean | — | Available for booking (default `true`) |
+| `is_package` | boolean | — | Whether this bundles sub-services |
 
 ## Example
 
@@ -38,6 +48,8 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/services \
     "is_package": true
   }'
 ```
+
+## Response `201`
 
 ```json
 {

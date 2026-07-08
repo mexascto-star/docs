@@ -4,17 +4,27 @@ description: "Deletes a tag by name. Requires the tags.write scope."
 openapi: "DELETE /tags/{name}"
 ---
 
-Removes a tag from your catalog by name (URL-encoded). This does not automatically remove the tag from contacts that already have it — update those contacts separately if needed.
+Removes a tag from your catalog by name. URL-encode the name in the path. This does not automatically remove the tag from contacts that already have it — update those contacts separately if needed.
 
 **Required scope:** `tags.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+DELETE /tags/{name}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
 ```bash
-# Delete the tag named "old-promo" (URL-encode spaces and special chars)
 curl -X DELETE "https://mex-pet-app.vercel.app/api/v1/tags/old-promo" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

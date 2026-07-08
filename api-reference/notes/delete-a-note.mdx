@@ -8,12 +8,23 @@ Permanently removes a note from a contact's record.
 
 **Required scope:** `notes.write`
 
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+DELETE /notes/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
+
 ## Example
 
 ```bash
 curl -X DELETE https://mex-pet-app.vercel.app/api/v1/notes/note_ll2g3h \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

@@ -4,11 +4,20 @@ description: "Returns a paginated list of forms and surveys. Requires the forms.
 openapi: "GET /forms"
 ---
 
-Returns all forms and surveys in your ranch. Use `?type=form` for intake and waiver forms, or `?type=survey` for post-stay feedback surveys.
+Returns all forms and surveys in your ranch. Use `?type=form` for intake forms and waivers, `?type=survey` for post-stay feedback.
 
 **Required scope:** `forms.read`
 
-## Filters
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /forms
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
 
 | Parameter | Type | Description |
 | --- | --- | --- |
@@ -22,6 +31,8 @@ Returns all forms and surveys in your ranch. Use `?type=form` for intake and wai
 curl "https://mex-pet-app.vercel.app/api/v1/forms?type=form" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

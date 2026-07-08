@@ -4,9 +4,18 @@ description: "Retrieves a single automation workflow by ID. Requires the automat
 openapi: "GET /automations/{id}"
 ---
 
-Retrieves a single automation by ID. Use this to check the current status of a workflow before activating or pausing it.
+Retrieves a single automation by ID. Check its current `status` before activating or pausing it.
 
 **Required scope:** `automations.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /automations/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -14,6 +23,8 @@ Retrieves a single automation by ID. Use this to check the current status of a w
 curl https://mex-pet-app.vercel.app/api/v1/automations/auto_mm3h4i \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

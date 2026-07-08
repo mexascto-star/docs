@@ -4,9 +4,19 @@ description: "Updates fields on a pet record. Requires the pets.write scope."
 openapi: "PATCH /pets/{id}"
 ---
 
-Updates one or more fields on an existing pet. Only supplied fields are changed (PATCH semantics). The pet's owner (`contact_id`) cannot be changed after creation.
+Updates one or more fields on an existing pet (PATCH semantics). The pet's `contact_id` (owner) cannot be changed after creation.
 
 **Required scope:** `pets.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+PATCH /pets/{id}
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
 
 ## Updatable fields
 
@@ -31,10 +41,11 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/pets/pet_aa1b2c \
   -H "Content-Type: application/json" \
   -d '{
     "weight": "68 lbs",
-    "health_notes": "Checkup completed July 2026 — all clear",
-    "is_vaccinated": true
+    "health_notes": "Checkup completed July 2026 — all clear"
   }'
 ```
+
+## Response `200`
 
 ```json
 {

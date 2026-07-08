@@ -8,29 +8,37 @@ Creates a new reservation. A booking must be linked to an existing contact — i
 
 **Required scope:** `bookings.write`
 
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
 <Tip>
-  Use an `Idempotency-Key` header so that network retries don't create duplicate bookings.
+  Use an `Idempotency-Key` header so that network retries never create duplicate bookings.
 </Tip>
+
+## Request
+
+```bash
+POST /bookings
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
 
 ## Body fields
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `contact_id` | string | ✅ | ID of the customer contact. Must exist in your business. |
+| `contact_id` | string | ✅ | ID of the customer. Must be an existing contact in your business. |
 | `check_in_date` | date | ✅ | Check-in date (YYYY-MM-DD) |
 | `check_out_date` | date | — | Check-out date (YYYY-MM-DD) |
-| `service_type` | string | — | Primary service: `boarding`, `grooming`, `daycare`, `training` |
+| `service_type` | string | — | `boarding`, `grooming`, `daycare`, `training` |
 | `sub_services` | array | — | Line items: `[{ "name": "...", "price": 0.00 }]` |
-| `total_amount` | number | — | Total charge for the booking |
+| `total_amount` | number | — | Total charge in dollars |
 | `status` | string | — | Initial status (default `pending`) |
 | `payment_status` | string | — | Initial payment status (default `unpaid`) |
-| `has_pickup` | boolean | — | Whether pickup transport is required |
-| `has_dropoff` | boolean | — | Whether dropoff transport is required |
-
-## Validation
+| `has_pickup` | boolean | — | Whether pickup transport is needed |
+| `has_dropoff` | boolean | — | Whether dropoff transport is needed |
 
 <Warning>
-  `contact_id` must be an existing contact in your business. An invalid or cross-business ID returns `400 invalid_request_error`: _"contact\_id does not match a contact in your business."_
+  `contact_id` must be an existing contact in your business. An invalid ID returns `400`: _"contact\_id does not match a contact in your business."_
 </Warning>
 
 ## Example
@@ -54,6 +62,8 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/bookings \
     "has_dropoff": true
   }'
 ```
+
+## Response `201`
 
 ```json
 {

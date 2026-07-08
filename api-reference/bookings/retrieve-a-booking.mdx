@@ -4,9 +4,18 @@ description: "Retrieves a single booking by ID. Requires the bookings.read scope
 openapi: "GET /bookings/{id}"
 ---
 
-Retrieves a booking by ID. The response embeds a `contact` summary (id, full\_name, email, phone) so you have the customer's details without a second API call.
+Retrieves a booking by ID. The response embeds the customer's contact details (id, name, email, phone) so you don't need a second API call.
 
 **Required scope:** `bookings.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /bookings/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
 
 ## Example
 
@@ -14,6 +23,8 @@ Retrieves a booking by ID. The response embeds a `contact` summary (id, full\_na
 curl https://mex-pet-app.vercel.app/api/v1/bookings/bkg_cc3d4e \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {

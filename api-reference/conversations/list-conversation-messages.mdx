@@ -4,23 +4,25 @@ description: "Returns all messages in a conversation thread. Requires the conver
 openapi: "GET /conversations/{id}/messages"
 ---
 
-Returns all messages in a conversation thread in chronological order. Each message shows the sender, receiver, channel, and whether it has been read.
+Returns all messages in a conversation thread in chronological order.
 
 **Required scope:** `conversations.read`
 
-## Message object fields
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
 
-| Field | Description |
-| --- | --- |
-| `id` | Unique message ID |
-| `conversation_id` | The parent conversation |
-| `sender_id` | ID of the sender (staff or contact) |
-| `receiver_id` | ID of the recipient |
-| `channel` | `sms` or `email` |
-| `subject` | Email subject line (email only, null for SMS) |
-| `text` | Message body |
-| `is_read` | Whether the message has been read |
-| `created_at` | When the message was sent |
+## Request
+
+```bash
+GET /conversations/{id}/messages
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
 
 ## Example
 
@@ -28,6 +30,8 @@ Returns all messages in a conversation thread in chronological order. Each messa
 curl "https://mex-pet-app.vercel.app/api/v1/conversations/conv_rr8m9n/messages" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
+
+## Response `200`
 
 ```json
 {
