@@ -3,3 +3,22 @@ title: "Remove a staff member"
 description: "Removes a staff member from your ranch. Requires the staff.write scope."
 openapi: "DELETE /staff/{id}"
 ---
+
+Removes a team member from your ranch. Consider setting `is_active: false` via a PATCH instead — deactivating preserves assignment history on past bookings.
+
+**Required scope:** `staff.write`
+
+## Example
+
+```bash
+curl -X DELETE https://mex-pet-app.vercel.app/api/v1/staff/stf_ff6a7b \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "id": "stf_ff6a7b",
+  "object": "staff",
+  "deleted": true
+}
+```

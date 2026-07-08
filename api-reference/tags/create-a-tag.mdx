@@ -3,3 +3,40 @@ title: "Create a tag"
 description: "Creates a new tag in your catalog. Requires the tags.write scope."
 openapi: "POST /tags"
 ---
+
+Adds a tag to your catalog. If the tag already exists, the request succeeds silently — no error, no duplicate. After creating a tag, apply it to contacts via `PATCH /contacts/{id}` with a `tags` array.
+
+**Required scope:** `tags.write`
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | ✅ | Tag name. Lowercase recommended. |
+
+## Example
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/tags \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "loyal-customer" }'
+```
+
+```json
+{
+  "object": "tag",
+  "name": "loyal-customer"
+}
+```
+
+## Applying tags to contacts
+
+Tags live in the catalog independently. To tag a contact:
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/contacts/usr_6f1c3d \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "tags": ["vip", "dog-owner", "loyal-customer"] }'
+```

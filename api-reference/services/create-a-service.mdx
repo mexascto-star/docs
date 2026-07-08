@@ -3,3 +3,54 @@ title: "Create a service"
 description: "Creates a new service in your catalog. Requires the services.write scope."
 openapi: "POST /services"
 ---
+
+Adds a new service to your catalog. Set `is_package: true` to mark it as a bundle (its child services are managed via `parent_id` on each child service).
+
+**Required scope:** `services.write`
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `title` | string | ✅ | Service name |
+| `description` | string | — | Full description shown to staff and customers |
+| `category` | string | — | `boarding`, `grooming`, `daycare`, `training`, `addon`, `retail` |
+| `base_price` | number | — | Base price in dollars |
+| `price_type` | string | — | `nightly`, `fixed`, `tiered` |
+| `price_unit` | string | — | `per_night`, `per_mile`, `fixed` |
+| `is_active` | boolean | — | Whether available for booking (default `true`) |
+| `is_package` | boolean | — | Whether this is a package that bundles sub-services |
+
+## Example
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/services \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Weekend Boarding Package",
+    "description": "2-night stay with bath, brush, and nail trim included.",
+    "category": "boarding",
+    "base_price": 149,
+    "price_type": "fixed",
+    "price_unit": "fixed",
+    "is_active": true,
+    "is_package": true
+  }'
+```
+
+```json
+{
+  "id": "svc_gg7b8c",
+  "object": "service",
+  "title": "Weekend Boarding Package",
+  "description": "2-night stay with bath, brush, and nail trim included.",
+  "category": "boarding",
+  "base_price": 149,
+  "price_type": "fixed",
+  "price_unit": "fixed",
+  "is_active": true,
+  "is_package": true,
+  "created_at": "2026-07-09T17:00:00.000Z"
+}
+```

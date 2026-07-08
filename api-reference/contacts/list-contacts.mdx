@@ -3,3 +3,55 @@ title: "List contacts"
 description: "Returns a paginated list of contacts. Requires the contacts.read scope."
 openapi: "GET /contacts"
 ---
+
+Use this endpoint to browse, search, or filter the customers in your ranch. Results are paginated — use `limit` and `offset` to page through large lists, and combine filters to narrow results.
+
+**Required scope:** `contacts.read`
+
+## Filters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip for pagination (default 0) |
+| `email` | string | Exact email match (case-insensitive) |
+| `phone` | string | Exact phone number match |
+| `tag` | string | Only contacts that have this tag |
+| `query` | string | Free-text search over name, email, and phone |
+
+## Tenant isolation
+
+All results are automatically scoped to your ranch. You can never retrieve contacts belonging to another business, even by guessing IDs.
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/contacts?query=smith&limit=2" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "usr_6f1c3d",
+      "object": "contact",
+      "full_name": "Jane Smith",
+      "email": "jane@example.com",
+      "phone": "+15125550123",
+      "city": "Austin",
+      "state": "TX",
+      "membership_tier": "gold",
+      "tags": ["vip", "dog-owner"],
+      "loyalty_points": 240,
+      "avatar_url": null,
+      "created_at": "2026-01-15T10:00:00.000Z"
+    }
+  ],
+  "limit": 2,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

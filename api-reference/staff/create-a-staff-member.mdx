@@ -3,3 +3,54 @@ title: "Create a staff member"
 description: "Creates a team member with auth account and staff record. Requires the staff.write scope."
 openapi: "POST /staff"
 ---
+
+Creates a new team member. This is a compound operation: it provisions an auth account, creates a user profile, and creates the staff record all in one request. The new team member will receive an invitation email to set their password.
+
+**Required scope:** `staff.write`
+
+<Tip>
+  Use an `Idempotency-Key` to safely retry this request — creating the same staff member twice is avoided automatically.
+</Tip>
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `full_name` | string | ✅ | Team member's full name |
+| `email` | string | ✅ | Work email address (used for login) |
+| `phone` | string | — | Contact phone number |
+| `staff_type` | string | — | `worker` (default), `driver`, `receptionist` |
+| `service_type` | string | — | Specialization (e.g. `grooming`, `boarding`) |
+
+## Example
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/staff \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: e5f6a7b8-c9d0-1234-ef01-567890123456" \
+  -d '{
+    "full_name": "Carlos Rivera",
+    "email": "carlos@ranch.com",
+    "phone": "+15125550401",
+    "staff_type": "driver",
+    "service_type": "transport"
+  }'
+```
+
+```json
+{
+  "id": "stf_ff6a7b",
+  "object": "staff",
+  "user_id": "auth_ll2g3b",
+  "full_name": "Carlos Rivera",
+  "email": "carlos@ranch.com",
+  "phone": "+15125550401",
+  "staff_type": "driver",
+  "service_type": "transport",
+  "is_active": true,
+  "is_online": false,
+  "avatar_url": null,
+  "created_at": "2026-07-09T19:00:00.000Z"
+}
+```

@@ -3,3 +3,53 @@ title: "Retrieve a contact"
 description: "Retrieves a single contact by ID. Requires the contacts.read scope."
 openapi: "GET /contacts/{id}"
 ---
+
+Retrieves a single contact by their ID. The response includes a `pets` array — all pets registered under this contact — so you can get a full customer profile in one request.
+
+**Required scope:** `contacts.read`
+
+## Embedded relationships
+
+The response embeds the contact's pets inline:
+
+```json
+{
+  "id": "usr_6f1c3d",
+  "object": "contact",
+  "full_name": "Jane Smith",
+  "email": "jane@example.com",
+  "phone": "+15125550123",
+  "city": "Austin",
+  "state": "TX",
+  "membership_tier": "gold",
+  "tags": ["vip"],
+  "loyalty_points": 240,
+  "avatar_url": null,
+  "created_at": "2026-01-15T10:00:00.000Z",
+  "pets": [
+    {
+      "id": "pet_aa1b2c",
+      "object": "pet",
+      "contact_id": "usr_6f1c3d",
+      "name": "Bella",
+      "type": "dog",
+      "breed": "Labrador Retriever",
+      "age": "3",
+      "weight": "65 lbs",
+      "gender": "female",
+      "is_vaccinated": true,
+      "status": "active",
+      "created_at": "2026-02-01T09:00:00.000Z"
+    }
+  ]
+}
+```
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/contacts/usr_6f1c3d \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+A `404` is returned if the contact does not exist in your business.

@@ -3,3 +3,43 @@ title: "Create a note"
 description: "Creates a free-text note on a contact. Requires the notes.write scope."
 openapi: "POST /notes"
 ---
+
+Adds a free-text note to a contact's record. Notes are useful for capturing staff observations, special handling instructions, or customer preferences that don't fit into structured fields.
+
+**Required scope:** `notes.write`
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contact_id` | string | ✅ | ID of the contact. Must be an existing contact in your business. |
+| `body` | string | ✅ | The note text (no length limit) |
+
+## Validation
+
+<Warning>
+  `contact_id` must be an existing contact in your business. An invalid ID returns `400 invalid_request_error`.
+</Warning>
+
+## Example
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/notes \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contact_id": "usr_6f1c3d",
+    "body": "Jane mentioned she will be traveling internationally in September — may need extended boarding."
+  }'
+```
+
+```json
+{
+  "id": "note_ll2g3h",
+  "object": "note",
+  "contact_id": "usr_6f1c3d",
+  "body": "Jane mentioned she will be traveling internationally in September — may need extended boarding.",
+  "created_by": null,
+  "created_at": "2026-07-09T20:00:00.000Z"
+}
+```

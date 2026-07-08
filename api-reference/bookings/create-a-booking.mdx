@@ -3,3 +3,76 @@ title: "Create a booking"
 description: "Creates a new booking reservation. Requires the bookings.write scope."
 openapi: "POST /bookings"
 ---
+
+Creates a new reservation. A booking must be linked to an existing contact — it cannot exist without a valid customer.
+
+**Required scope:** `bookings.write`
+
+<Tip>
+  Use an `Idempotency-Key` header so that network retries don't create duplicate bookings.
+</Tip>
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contact_id` | string | ✅ | ID of the customer contact. Must exist in your business. |
+| `check_in_date` | date | ✅ | Check-in date (YYYY-MM-DD) |
+| `check_out_date` | date | — | Check-out date (YYYY-MM-DD) |
+| `service_type` | string | — | Primary service: `boarding`, `grooming`, `daycare`, `training` |
+| `sub_services` | array | — | Line items: `[{ "name": "...", "price": 0.00 }]` |
+| `total_amount` | number | — | Total charge for the booking |
+| `status` | string | — | Initial status (default `pending`) |
+| `payment_status` | string | — | Initial payment status (default `unpaid`) |
+| `has_pickup` | boolean | — | Whether pickup transport is required |
+| `has_dropoff` | boolean | — | Whether dropoff transport is required |
+
+## Validation
+
+<Warning>
+  `contact_id` must be an existing contact in your business. An invalid or cross-business ID returns `400 invalid_request_error`: _"contact\_id does not match a contact in your business."_
+</Warning>
+
+## Example
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/bookings \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: d4e5f6a7-b8c9-0123-def0-456789012345" \
+  -d '{
+    "contact_id": "usr_6f1c3d",
+    "check_in_date": "2026-08-01",
+    "check_out_date": "2026-08-05",
+    "service_type": "boarding",
+    "sub_services": [
+      { "name": "Standard Boarding", "price": 55 },
+      { "name": "Bath & Brush", "price": 25 }
+    ],
+    "total_amount": 245,
+    "has_pickup": true,
+    "has_dropoff": true
+  }'
+```
+
+```json
+{
+  "id": "bkg_dd4e5f",
+  "object": "booking",
+  "contact_id": "usr_6f1c3d",
+  "service_type": "boarding",
+  "sub_services": [
+    { "name": "Standard Boarding", "price": 55 },
+    { "name": "Bath & Brush", "price": 25 }
+  ],
+  "check_in_date": "2026-08-01",
+  "check_out_date": "2026-08-05",
+  "status": "pending",
+  "payment_status": "unpaid",
+  "total_amount": 245,
+  "assigned_staff_id": null,
+  "has_pickup": true,
+  "has_dropoff": true,
+  "created_at": "2026-07-09T16:00:00.000Z"
+}
+```

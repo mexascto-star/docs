@@ -3,3 +3,45 @@ title: "Activate / pause an automation"
 description: "Set the automation status to active, paused, or draft. Requires the automations.write scope."
 openapi: "PATCH /automations/{id}"
 ---
+
+Changes the status of an automation workflow or renames it. This is the primary way to turn automations on and off programmatically — for example, pausing a welcome SMS sequence during a scheduled maintenance window.
+
+**Required scope:** `automations.write`
+
+## Body fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `status` | string | `active`, `paused`, or `draft` |
+| `name` | string | Rename the automation |
+
+## Status transitions
+
+| From | To | Effect |
+| --- | --- | --- |
+| `draft` | `active` | Automation begins firing on trigger events |
+| `active` | `paused` | Trigger events are ignored until re-activated |
+| `paused` | `active` | Resumes firing |
+| Any | `draft` | Returns to draft — use before making structural edits in the app |
+
+## Example — pause an automation
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/automations/auto_mm3h4i \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "status": "paused" }'
+```
+
+```json
+{
+  "id": "auto_mm3h4i",
+  "object": "automation",
+  "name": "New Contact Welcome SMS",
+  "status": "paused",
+  "trigger_type": "contact.created",
+  "folder_id": null,
+  "created_at": "2026-03-01T00:00:00.000Z",
+  "updated_at": "2026-07-09T21:00:00.000Z"
+}
+```

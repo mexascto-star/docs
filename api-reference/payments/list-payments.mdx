@@ -3,3 +3,63 @@ title: "List payments"
 description: "Returns payments and invoices. Requires the payments.read scope."
 openapi: "GET /payments"
 ---
+
+Returns payments recorded in your ranch. Each payment carries an `invoice_number` for reconciliation. Payments are read-only — they are created automatically when a booking is paid through the app.
+
+**Required scope:** `payments.read`
+
+## Filters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
+| `contact_id` | string | Filter to a specific customer |
+| `invoice_number` | string | Look up a specific invoice |
+| `status` | string | `paid`, `pending`, `refunded` |
+
+## Payment object fields
+
+| Field | Description |
+| --- | --- |
+| `id` | Unique payment ID |
+| `invoice_number` | Human-readable invoice reference (e.g. `INV-20260709-00123`) |
+| `contact_id` | The paying contact |
+| `booking_id` | Associated booking (if any) |
+| `amount` | Amount in dollars |
+| `payment_method` | `CARD`, `CASH`, `CHECK`, etc. |
+| `booking_type` | Service category for the booking |
+| `status` | `paid`, `pending`, or `refunded` |
+| `payment_date` | When the payment was recorded |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/payments?contact_id=usr_6f1c3d&status=paid" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "pay_jj0e1f",
+      "object": "payment",
+      "invoice_number": "INV-20260709-00123",
+      "contact_id": "usr_6f1c3d",
+      "booking_id": "bkg_cc3d4e",
+      "amount": 240,
+      "payment_method": "CARD",
+      "booking_type": "boarding",
+      "status": "paid",
+      "payment_date": "2026-07-09T18:00:00.000Z",
+      "created_at": "2026-07-09T18:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

@@ -3,3 +3,48 @@ title: "List conversations"
 description: "Returns a paginated list of message threads with your contacts. Requires the conversations.read scope."
 openapi: "GET /conversations"
 ---
+
+Returns all conversation threads between your ranch and its contacts. Conversations are read-only — they are created automatically when a contact sends an inbound message or when you send one via `POST /messages`. Use `GET /conversations/{id}/messages` to fetch the full message history for a thread.
+
+**Required scope:** `conversations.read`
+
+## Conversation object fields
+
+| Field | Description |
+| --- | --- |
+| `id` | Unique conversation ID |
+| `customer_id` | The contact this thread belongs to |
+| `staff_id` | Assigned staff member, if any |
+| `channel` | `sms` or `email` |
+| `last_message` | Preview of the most recent message |
+| `last_message_time` | Timestamp of the most recent message |
+| `created_at` | When the conversation was first created |
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/conversations \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "conv_rr8m9n",
+      "object": "conversation",
+      "customer_id": "usr_6f1c3d",
+      "staff_id": "stf_ee5f6a",
+      "channel": "sms",
+      "last_message": "Thanks! We'll be there by 2pm.",
+      "last_message_time": "2026-07-09T14:30:00.000Z",
+      "created_at": "2026-07-09T09:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

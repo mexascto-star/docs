@@ -3,3 +3,69 @@ title: "Create a contact"
 description: "Creates a new contact. Requires the contacts.write scope."
 openapi: "POST /contacts"
 ---
+
+Creates a new customer in your ranch. If a user account with the same email already exists in the platform, that account is linked to your business — no duplicate is created.
+
+**Required scope:** `contacts.write`
+
+<Tip>
+  Use an `Idempotency-Key` header to safely retry this request without accidentally creating duplicates.
+</Tip>
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `full_name` | string | ✅ | The contact's display name |
+| `email` | string | ✅ | Email address. If it already exists, the account is linked. |
+| `phone` | string | — | Phone number in any format (E.164 recommended) |
+| `address` | string | — | Street address |
+| `city` | string | — | City |
+| `state` | string | — | State or province |
+| `zip_code` | string | — | Postal code |
+| `country` | string | — | Country |
+| `membership_tier` | string | — | e.g. `bronze`, `silver`, `gold` |
+| `tags` | string\[\] | — | Tags to apply immediately |
+
+## Validation
+
+- `full_name` and `email` are required. All other fields are optional.
+- Role and business assignment are set automatically and cannot be overridden.
+
+## Example
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/contacts \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -d '{
+    "full_name": "John Smith",
+    "email": "john@example.com",
+    "phone": "+15125550199",
+    "city": "Austin",
+    "state": "TX",
+    "membership_tier": "bronze",
+    "tags": ["new-client"]
+  }'
+```
+
+```json
+{
+  "id": "usr_9a2b4c",
+  "object": "contact",
+  "full_name": "John Smith",
+  "email": "john@example.com",
+  "phone": "+15125550199",
+  "address": null,
+  "city": "Austin",
+  "state": "TX",
+  "zip_code": null,
+  "country": null,
+  "membership_tier": "bronze",
+  "tags": ["new-client"],
+  "loyalty_points": 0,
+  "avatar_url": null,
+  "created_at": "2026-07-09T14:22:00.000Z"
+}
+```

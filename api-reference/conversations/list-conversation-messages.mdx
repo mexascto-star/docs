@@ -3,3 +3,64 @@ title: "List messages in a conversation"
 description: "Returns all messages in a conversation thread. Requires the conversations.read scope."
 openapi: "GET /conversations/{id}/messages"
 ---
+
+Returns all messages in a conversation thread in chronological order. Each message shows the sender, receiver, channel, and whether it has been read.
+
+**Required scope:** `conversations.read`
+
+## Message object fields
+
+| Field | Description |
+| --- | --- |
+| `id` | Unique message ID |
+| `conversation_id` | The parent conversation |
+| `sender_id` | ID of the sender (staff or contact) |
+| `receiver_id` | ID of the recipient |
+| `channel` | `sms` or `email` |
+| `subject` | Email subject line (email only, null for SMS) |
+| `text` | Message body |
+| `is_read` | Whether the message has been read |
+| `created_at` | When the message was sent |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/conversations/conv_rr8m9n/messages" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "msg_ss9n0o",
+      "object": "message",
+      "conversation_id": "conv_rr8m9n",
+      "sender_id": "stf_ee5f6a",
+      "receiver_id": "usr_6f1c3d",
+      "channel": "sms",
+      "subject": null,
+      "text": "Hi Jane! Bella is all checked in and settling in great. 🐾",
+      "is_read": true,
+      "created_at": "2026-07-09T09:05:00.000Z"
+    },
+    {
+      "id": "msg_tt0o1p",
+      "object": "message",
+      "conversation_id": "conv_rr8m9n",
+      "sender_id": "usr_6f1c3d",
+      "receiver_id": "stf_ee5f6a",
+      "channel": "sms",
+      "subject": null,
+      "text": "Thanks! We'll be there by 2pm.",
+      "is_read": true,
+      "created_at": "2026-07-09T14:30:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 2,
+  "has_more": false
+}
+```

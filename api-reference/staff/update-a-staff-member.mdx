@@ -3,3 +3,43 @@ title: "Update a staff member"
 description: "Updates a staff member's profile. Requires the staff.write scope."
 openapi: "PATCH /staff/{id}"
 ---
+
+Updates a team member's profile. Only the fields you supply are changed. Note that changing `staff_type` is a role change — it updates the underlying user's role in the system as well.
+
+**Required scope:** `staff.write`
+
+## Updatable fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `full_name` | string | Display name |
+| `phone` | string | Contact phone |
+| `staff_type` | string | `worker`, `driver`, `receptionist` — also changes user role |
+| `service_type` | string | Specialization |
+| `is_active` | boolean | Set to `false` to deactivate without deleting |
+
+## Example — deactivate a staff member
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/staff/stf_ff6a7b \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "is_active": false }'
+```
+
+```json
+{
+  "id": "stf_ff6a7b",
+  "object": "staff",
+  "user_id": "auth_ll2g3b",
+  "full_name": "Carlos Rivera",
+  "email": "carlos@ranch.com",
+  "phone": "+15125550401",
+  "staff_type": "driver",
+  "service_type": "transport",
+  "is_active": false,
+  "is_online": false,
+  "avatar_url": null,
+  "created_at": "2026-07-09T19:00:00.000Z"
+}
+```

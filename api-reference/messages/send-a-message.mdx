@@ -3,3 +3,98 @@ title: "Send a message"
 description: "Sends an SMS or email to a contact through your configured channel. Requires the messages.send scope."
 openapi: "POST /messages"
 ---
+
+Sends an SMS or email to a contact through your ranch's configured messaging channel. Messages can only be sent to existing contacts in your ranch — this is a deliberate safety guardrail to prevent spam and ensure compliance.
+
+**Required scope:** `messages.send`
+
+<Tip>
+  Use `contact_id` (recommended) rather than `to` — it's unambiguous, always resolves correctly, and prevents mismatches when a contact has multiple phone numbers on file.
+</Tip>
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `channel` | string | ✅ | `sms` or `email` |
+| `contact_id` | string | ✅ or `to` | ID of the contact to message. Must be an existing contact. |
+| `to` | string | ✅ or `contact_id` | Phone (E.164) for SMS or email address. **Must match an existing contact in your business.** |
+| `message` | string | ✅ for SMS | Plain-text message body |
+| `subject` | string | — | Email subject line (email only) |
+| `html` | string | — | HTML body for email (falls back to `message` if omitted) |
+| `cc` | string | — | CC address (email only) |
+| `bcc` | string | — | BCC address (email only) |
+
+## Critical validation rules
+
+<Warning>
+  **Contacts only.** You can only send to existing contacts in your ranch. Supplying a `to` value (phone or email) that doesn't match any contact returns `400 invalid_request_error`.
+
+  **Contact must have the channel on file.** If the contact has no phone number (for SMS) or no email address (for email), the request returns `422`.
+</Warning>
+
+## How sending works
+
+The API resolves the contact, then picks a sending identity from your ranch's configured channels — your admin's Twilio number for SMS, or your connected Gmail/Mailgun account for email. The message is delivered through the omnichannel sender and logged as a conversation message.
+
+## Example — send an SMS
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/messages \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: f6a7b8c9-d0e1-2345-f012-678901234567" \
+  -d '{
+    "channel": "sms",
+    "contact_id": "usr_6f1c3d",
+    "message": "Hi Jane! Bella is ready for pickup. See you soon! 🐾"
+  }'
+```
+
+```json
+{
+  "object": "message",
+  "channel": "sms",
+  "to": "+15125550123",
+  "contact_id": "usr_6f1c3d",
+  "status": "sent",
+  "provider_response": {
+    "sid": "SM1234567890abcdef",
+    "status": "queued"
+  }
+}
+```
+
+## Example — send an email
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/messages \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "channel": "email",
+    "contact_id": "usr_6f1c3d",
+    "subject": "Bella is ready for pickup!",
+    "message": "Hi Jane,\n\nBella had a wonderful stay and is ready to go home. She ate all her meals and played well with the other dogs.\n\nSee you soon!\nThe Ranch Team",
+    "html": "<p>Hi Jane,</p><p>Bella had a wonderful stay and is ready to go home...</p>"
+  }'
+```
+
+```json
+{
+  "object": "message",
+  "channel": "email",
+  "to": "jane@example.com",
+  "contact_id": "usr_6f1c3d",
+  "status": "sent",
+  "provider_response": {}
+}
+```
+
+## Error cases
+
+| Error | Cause |
+| --- | --- |
+| `400 invalid_request_error` | `contact_id` is not a contact in your business, or `to` doesn't match any contact |
+| `422 configuration_error` | No messaging channel is configured for your ranch |
+| `422 send_error` | Contact has no phone (SMS) or email address on file |

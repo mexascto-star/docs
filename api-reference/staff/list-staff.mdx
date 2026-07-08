@@ -3,3 +3,49 @@ title: "List staff"
 description: "Returns your team members. Requires the staff.read scope."
 openapi: "GET /staff"
 ---
+
+Returns all team members in your ranch. Filter by `staff_type` to get workers, drivers, or receptionists separately, or use `active=true` to get only currently active members.
+
+**Required scope:** `staff.read`
+
+## Filters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
+| `staff_type` | string | `worker`, `driver`, `receptionist` |
+| `active` | boolean | `true` = active members only |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/staff?staff_type=worker&active=true" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "stf_ee5f6a",
+      "object": "staff",
+      "user_id": "auth_kk1f2a",
+      "full_name": "Maria Lopez",
+      "email": "maria@ranch.com",
+      "phone": "+15125550300",
+      "staff_type": "worker",
+      "service_type": "boarding",
+      "is_active": true,
+      "is_online": true,
+      "avatar_url": null,
+      "created_at": "2026-03-01T08:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

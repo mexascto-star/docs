@@ -3,3 +3,76 @@ title: "Update a booking"
 description: "Updates fields on a booking. Requires the bookings.write scope."
 openapi: "PATCH /bookings/{id}"
 ---
+
+Updates an existing booking. Use this to change status, reassign staff, update payment status, or adjust dates and services. Only the fields you provide are changed.
+
+**Required scope:** `bookings.write`
+
+## Updatable fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `service_type` | string | Primary service type |
+| `sub_services` | array | Line items `[{ name, price }]` — replaces existing |
+| `check_in_date` | date | Check-in date (YYYY-MM-DD) |
+| `check_out_date` | date | Check-out date (YYYY-MM-DD) |
+| `total_amount` | number | Total charge |
+| `payment_status` | string | `unpaid`, `partial`, `paid`, `refunded` |
+| `assigned_staff_id` | string | Staff member ID to assign |
+| `status` | string | `pending`, `in_progress`, `completed`, `cancelled` |
+
+## Common workflows
+
+**Check a pet in:**
+
+```json
+{ "status": "in_progress" }
+```
+
+**Mark as paid:**
+
+```json
+{ "payment_status": "paid" }
+```
+
+**Assign a staff member:**
+
+```json
+{ "assigned_staff_id": "stf_ee5f6a" }
+```
+
+**Complete a booking:**
+
+```json
+{ "status": "completed", "payment_status": "paid" }
+```
+
+## Example
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/bookings/bkg_cc3d4e \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "in_progress",
+    "assigned_staff_id": "stf_ee5f6a"
+  }'
+```
+
+```json
+{
+  "id": "bkg_cc3d4e",
+  "object": "booking",
+  "contact_id": "usr_6f1c3d",
+  "service_type": "boarding",
+  "check_in_date": "2026-07-09",
+  "check_out_date": "2026-07-12",
+  "status": "in_progress",
+  "payment_status": "unpaid",
+  "total_amount": 240,
+  "assigned_staff_id": "stf_ee5f6a",
+  "has_pickup": false,
+  "has_dropoff": false,
+  "created_at": "2026-07-01T09:00:00.000Z"
+}
+```
