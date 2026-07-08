@@ -1,47 +1,117 @@
 ---
 title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+description: "From zero to your first API call in under five minutes."
+icon: "rocket"
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+## 1. Create an API token
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
-
-    ```bash
-    npm install your-package
-    ```
+  <Step title="Open the dashboard">
+    Sign in at [app.mexpet.app](https://app.mexpet.app) and navigate to **Settings → API Keys**.
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
-
-    ```bash
-    your-cli init
-    ```
+  <Step title="Create a token">
+    Click **Create token**, give it a descriptive name (e.g. `Zapier production`), and choose the [scopes](/scopes) it needs. Grant only the permissions the integration actually requires.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
-
-    ```bash
-    your-cli start
-    ```
+  <Step title="Copy the secret">
+    The full token (`mxp_live_…`) is shown **once**. Copy it immediately and store it somewhere safe — you cannot view it again. If you lose it, revoke it and create a new one.
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## 2. Make your first request
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+Send the token as a bearer token in the `Authorization` header.
+
+<CodeGroup>
+
+```bash cURL
+curl https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```javascript Node.js
+const res = await fetch(
+  "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts",
+  { headers: { Authorization: "Bearer mxp_live_your_token_here" } }
+);
+const { data } = await res.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+res = requests.get(
+    "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts",
+    headers={"Authorization": "Bearer mxp_live_your_token_here"},
+)
+print(res.json()["data"])
+```
+
+</CodeGroup>
+
+A successful response looks like:
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "6f1c…",
+      "object": "contact",
+      "full_name": "Jane Doe",
+      "email": "jane@example.com",
+      "phone": "+15125550123",
+      "tags": ["vip"],
+      "loyalty_points": 40,
+      "created_at": "2026-06-01T10:12:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```
+
+## 3. Create a contact
+
+```bash cURL
+curl -X POST https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "full_name": "John Smith", "email": "john@example.com", "phone": "+15125550199" }'
+```
+
+## 4. Send a message
+
+```bash cURL
+curl -X POST https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/messages \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "channel": "sms", "to": "+15125550199", "message": "Your pup is ready for pickup! 🐾" }'
+```
+
+<Check>
+  You're live. Head to the [API Reference](/api-reference) for every endpoint, or read [Authentication](/authentication) and [Scopes](/scopes) next.
+</Check>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how bearer tokens work and best practices for securing them.
+  </Card>
+
+  <Card title="API Tokens & Scopes" icon="shield-check" href="/api-tokens">
+    Understand the principle of least privilege and manage token lifecycle.
+  </Card>
+
+  <Card title="Pagination" icon="list" href="/pagination">
+    Efficiently iterate through large result sets.
+  </Card>
+
+  <Card title="Errors" icon="triangle-exclamation" href="/errors">
+    Understand error codes and build resilient error handling.
+  </Card>
+</CardGroup>

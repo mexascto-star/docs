@@ -1,0 +1,72 @@
+---
+title: "Rate Limits"
+description: "Per-token request limits and how to handle throttling."
+icon: "gauge"
+---
+
+Each API token is rate-limited independently using a fixed window. By default a token may make **600 requests per 60 seconds**. Exceeding the limit returns HTTP `429 Too Many Requests`.
+
+## Response headers
+
+Every throttled (`429`) response includes:
+
+| Header | Meaning |
+| --- | --- |
+| `Retry-After` | Seconds to wait before retrying |
+| `X-RateLimit-Limit` | The request ceiling for the window |
+| `X-RateLimit-Remaining` | Requests left in the current window (`0` on a 429) |
+| `X-RateLimit-Reset` | ISO timestamp when the window resets |
+
+## The 429 body
+
+```json
+{
+  "error": {
+    "type": "rate_limit_error",
+    "code": "rate_limited",
+    "message": "Rate limit exceeded — max 600 requests per 60s. Retry in 12s."
+  }
+}
+```
+
+## Handling it — retry with backoff
+
+When you get a `429`, wait `Retry-After` seconds (or back off exponentially) and retry:
+
+```javascript
+async function requestWithRetry(url, options, attempt = 0) {
+  const res = await fetch(url, options);
+  if (res.status === 429 && attempt < 5) {
+    const retryAfter = Number(res.headers.get("Retry-After")) || 2 ** attempt;
+    await new Promise((r) => setTimeout(r, retryAfter * 1000));
+    return requestWithRetry(url, options, attempt + 1);
+  }
+  return res;
+}
+```
+
+```python
+import time
+import requests
+
+def request_with_retry(url, headers, max_attempts=5, **kwargs):
+    for attempt in range(max_attempts):
+        res = requests.request(url=url, headers=headers, **kwargs)
+        if res.status_code == 429 and attempt < max_attempts - 1:
+            retry_after = int(res.headers.get("Retry-After", 2 ** attempt))
+            time.sleep(retry_after)
+            continue
+        return res
+    return res
+```
+
+## Staying under the limit
+
+- Prefer **batch reads** with a large `limit` (up to 100) over many small requests
+- **Cache** data that changes rarely (e.g. your service catalog)
+- Space out bulk writes instead of firing hundreds of concurrent requests
+- For high-volume workloads, consider queuing and processing sequentially
+
+<Note>
+  Server errors (`5xx`) are also safe to retry with backoff. Other client errors (`4xx`) won’t succeed on retry — fix the request instead.
+</Note>
