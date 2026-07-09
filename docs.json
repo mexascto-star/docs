@@ -7,10 +7,7 @@
     "light": "#BEF264",
     "dark": "#111111"
   },
-  "favicon": {
-    "light": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg",
-    "dark": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg"
-  },
+  "favicon": "/favicon.svg",
   "navigation": {
     "pages": [
       {
@@ -23,7 +20,7 @@
     ],
     "groups": [
       {
-        "group": "Getting Started",
+        "group": "Getting started",
         "pages": [
           "index",
           "quickstart",
@@ -32,7 +29,7 @@
         ]
       },
       {
-        "group": "Core Concepts",
+        "group": "Core concepts",
         "pages": [
           "pagination",
           "errors",
@@ -139,8 +136,8 @@
     ]
   },
   "logo": {
-    "light": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg",
-    "dark": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg",
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
     "href": "https://mex-pet-app.vercel.app"
   },
   "navbar": {
@@ -151,7 +148,7 @@
     },
     "links": [
       {
-        "href": "mailto:info@mexas-ai.com",
+        "href": "mailto:support@mexpet.app",
         "label": "Support"
       }
     ]
@@ -178,7 +175,7 @@
         "items": [
           {
             "label": "API Reference",
-            "href": "/api-reference"
+            "href": "/api-reference/overview"
           },
           {
             "label": "Quickstart",
@@ -200,9 +197,20 @@
     "decoration": "grid"
   },
   "api": {
-    "openapi": "openapi.json"
+    "openapi": "openapi.json",
+    "playground": {
+      "display": "interactive"
+    }
   },
   "metadata": {
     "timestamp": false
+  },
+  "fonts": {
+    "heading": {
+      "family": "Inter"
+    },
+    "body": {
+      "family": "Inter"
+    }
   }
 }

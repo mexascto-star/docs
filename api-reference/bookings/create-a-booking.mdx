@@ -29,17 +29,52 @@ Content-Type: application/json
 | `contact_id` | string | ✅ | ID of the customer. Must be an existing contact in your business. |
 | `check_in_date` | date | ✅ | Check-in date (YYYY-MM-DD) |
 | `check_out_date` | date | — | Check-out date (YYYY-MM-DD) |
+| `pet_id` | string | — | Optional pet in your business. Linked to the booking via `pet_ids` and the `booking_pets` junction. |
 | `service_type` | string | — | `boarding`, `grooming`, `daycare`, `training` |
-| `sub_services` | array | — | Line items: `[{ "name": "...", "price": 0.00 }]` |
+| `sub_services` | array | — | Array of line-item objects (see format below) |
 | `total_amount` | number | — | Total charge in dollars |
-| `status` | string | — | Initial status (default `pending`) |
 | `payment_status` | string | — | Initial payment status (default `unpaid`) |
 | `has_pickup` | boolean | — | Whether pickup transport is needed |
 | `has_dropoff` | boolean | — | Whether dropoff transport is needed |
 
 <Warning>
   `contact_id` must be an existing contact in your business. An invalid ID returns `400`: _"contact\_id does not match a contact in your business."_
+
+  **No `status` on create.** A new booking is **always** created as `pending`. Status is set later from the app — do not send a `status` field on create.
 </Warning>
+
+### `sub_services` format
+
+Each item in the `sub_services` array is a line-item object:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Line-item name (e.g. `"Dog Boarding (5 x 5)"`) |
+| `price` | number | Line price |
+| `pet_id` | uuid \| null | Pet this line is for, or `null` for booking-level lines like transport |
+| `quantity` | number | Quantity for this line |
+| `service_category` | string | e.g. `Boarding`, `Transport`, `Grooming` |
+| `address` | string | Optional — used for transport legs |
+
+```json
+[
+  {
+    "name": "Dog Boarding (5 x 5)",
+    "price": 24,
+    "pet_id": "f19a54f6-90d2-48a4-a39f-74db540f2213",
+    "address": "Punjab, Bahawalpur, Government Housing Society",
+    "quantity": 1,
+    "service_category": "Boarding"
+  },
+  {
+    "name": "Pick Up",
+    "price": 50,
+    "pet_id": null,
+    "quantity": 1,
+    "service_category": "Transport"
+  }
+]
+```
 
 ## Example
 
