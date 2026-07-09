@@ -1,0 +1,554 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mex Pet API",
+    "version": "1.0.0",
+    "description": "The Mex Pet REST API lets you manage contacts, pets, bookings, services and messaging for your ranch programmatically. Authenticate with a scoped bearer token created in **Settings → API Keys**. Every token is bound to a single business and only the scopes you grant.",
+    "contact": { "name": "Mex Pet Support", "email": "support@mexpet.app" }
+  },
+  "servers": [
+    { "url": "https://mex-pet-app.vercel.app/api/v1", "description": "Production" },
+    { "url": "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1", "description": "Direct (Supabase edge function)" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [
+    { "name": "Contacts", "description": "Customers of your ranch." },
+    { "name": "Pets", "description": "Pets that belong to your contacts." },
+    { "name": "Bookings", "description": "Reservations for boarding, grooming, daycare and more." },
+    { "name": "Services", "description": "Your service catalog and pricing." },
+    { "name": "Payments", "description": "Payments and invoices." },
+    { "name": "Staff", "description": "Your team members (workers, drivers, receptionists)." },
+    { "name": "Tags", "description": "The tag catalog for segmenting contacts." },
+    { "name": "Notes", "description": "Free-text notes attached to contacts." },
+    { "name": "Automations", "description": "Automation workflows." },
+    { "name": "Forms", "description": "Forms, surveys and their submissions." },
+    { "name": "Conversations", "description": "Message threads with your contacts." },
+    { "name": "Messages", "description": "Send SMS and email to your contacts." }
+  ],
+  "paths": {
+    "/contacts": {
+      "get": {
+        "tags": ["Contacts"], "summary": "List contacts", "operationId": "listContacts",
+        "description": "Returns a paginated list of contacts. Requires the `contacts.read` scope.",
+        "parameters": [
+          { "$ref": "#/components/parameters/limit" },
+          { "$ref": "#/components/parameters/offset" },
+          { "name": "email", "in": "query", "schema": { "type": "string" }, "description": "Filter by exact email (case-insensitive)." },
+          { "name": "phone", "in": "query", "schema": { "type": "string" }, "description": "Filter by exact phone." },
+          { "name": "tag", "in": "query", "schema": { "type": "string" }, "description": "Only contacts carrying this tag." },
+          { "name": "query", "in": "query", "schema": { "type": "string" }, "description": "Free-text search over name, email and phone." }
+        ],
+        "responses": {
+          "200": { "description": "A list of contacts.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Contact" } } } } ] } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["Contacts"], "summary": "Create a contact", "operationId": "createContact",
+        "description": "Creates a new contact (customer). If a person with the same email already exists they are linked to your business. Requires the `contacts.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ContactCreate" } } } },
+        "responses": {
+          "201": { "description": "The created contact.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Contact" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/contacts/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": {
+        "tags": ["Contacts"], "summary": "Retrieve a contact", "operationId": "getContact",
+        "description": "Requires the `contacts.read` scope.",
+        "responses": {
+          "200": { "description": "The contact.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Contact" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Contacts"], "summary": "Update a contact", "operationId": "updateContact",
+        "description": "Updates the supplied fields. Requires the `contacts.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ContactUpdate" } } } },
+        "responses": {
+          "200": { "description": "The updated contact.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Contact" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["Contacts"], "summary": "Delete a contact", "operationId": "deleteContact",
+        "description": "Requires the `contacts.write` scope.",
+        "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } }
+      }
+    },
+    "/pets": {
+      "get": {
+        "tags": ["Pets"], "summary": "List pets", "operationId": "listPets",
+        "description": "Requires the `pets.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "contact_id", "in": "query", "schema": { "type": "string" }, "description": "Only pets belonging to this contact." }, { "name": "type", "in": "query", "schema": { "type": "string" }, "description": "Filter by pet type (e.g. dog, cat)." }, { "name": "query", "in": "query", "schema": { "type": "string" }, "description": "Search by pet name or breed." } ],
+        "responses": { "200": { "description": "A list of pets.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Pet" } } } } ] } } } } }
+      },
+      "post": {
+        "tags": ["Pets"], "summary": "Create a pet", "operationId": "createPet",
+        "description": "Requires the `pets.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PetCreate" } } } },
+        "responses": { "201": { "description": "The created pet.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/pets/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Pets"], "summary": "Retrieve a pet", "operationId": "getPet", "description": "Requires the `pets.read` scope.", "responses": { "200": { "description": "The pet.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Pets"], "summary": "Update a pet", "operationId": "updatePet", "description": "Requires the `pets.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PetCreate" } } } }, "responses": { "200": { "description": "The updated pet.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "delete": { "tags": ["Pets"], "summary": "Delete a pet", "operationId": "deletePet", "description": "Requires the `pets.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/bookings": {
+      "get": {
+        "tags": ["Bookings"], "summary": "List bookings", "operationId": "listBookings",
+        "description": "Requires the `bookings.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "contact_id", "in": "query", "schema": { "type": "string" } }, { "name": "status", "in": "query", "schema": { "type": "string" }, "description": "Filter by booking status (e.g. pending, in_progress, completed)." }, { "name": "service_type", "in": "query", "schema": { "type": "string" }, "description": "Filter by service type (e.g. boarding, grooming)." }, { "name": "from", "in": "query", "schema": { "type": "string", "format": "date" }, "description": "Check-in date on or after (YYYY-MM-DD)." }, { "name": "to", "in": "query", "schema": { "type": "string", "format": "date" }, "description": "Check-in date on or before (YYYY-MM-DD)." } ],
+        "responses": { "200": { "description": "A list of bookings.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Booking" } } } } ] } } } } }
+      },
+      "post": {
+        "tags": ["Bookings"], "summary": "Create a booking", "operationId": "createBooking",
+        "description": "Requires the `bookings.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BookingCreate" } } } },
+        "responses": { "201": { "description": "The created booking.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Booking" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/bookings/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Bookings"], "summary": "Retrieve a booking", "operationId": "getBooking", "description": "Requires the `bookings.read` scope.", "responses": { "200": { "description": "The booking.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Booking" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Bookings"], "summary": "Update a booking", "operationId": "updateBooking", "description": "Requires the `bookings.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BookingUpdate" } } } }, "responses": { "200": { "description": "The updated booking.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Booking" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "delete": { "tags": ["Bookings"], "summary": "Delete a booking", "operationId": "deleteBooking", "description": "Requires the `bookings.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/services": {
+      "get": {
+        "tags": ["Services"], "summary": "List services", "operationId": "listServices",
+        "description": "Requires the `services.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "active", "in": "query", "schema": { "type": "boolean" }, "description": "When true, only active services are returned." }, { "name": "category", "in": "query", "schema": { "type": "string" }, "description": "Filter by category (boarding, grooming, daycare, training, addon, retail)." }, { "name": "query", "in": "query", "schema": { "type": "string" }, "description": "Search by service title." } ],
+        "responses": { "200": { "description": "A list of services.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Service" } } } } ] } } } } }
+      },
+      "post": {
+        "tags": ["Services"], "summary": "Create a service", "operationId": "createService",
+        "description": "Requires the `services.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceCreate" } } } },
+        "responses": { "201": { "description": "The created service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Service" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/services/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Services"], "summary": "Retrieve a service", "operationId": "getService", "description": "Requires the `services.read` scope.", "responses": { "200": { "description": "The service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Service" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Services"], "summary": "Update a service", "operationId": "updateService", "description": "Requires the `services.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceCreate" } } } }, "responses": { "200": { "description": "The updated service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Service" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "delete": { "tags": ["Services"], "summary": "Delete a service", "operationId": "deleteService", "description": "Requires the `services.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/payments": {
+      "get": {
+        "tags": ["Payments"], "summary": "List payments", "operationId": "listPayments",
+        "description": "Returns payments (each carries an `invoice_number`). Requires the `payments.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "contact_id", "in": "query", "schema": { "type": "string" } }, { "name": "invoice_number", "in": "query", "schema": { "type": "string" } }, { "name": "status", "in": "query", "schema": { "type": "string" }, "description": "e.g. paid, refunded, pending." } ],
+        "responses": { "200": { "description": "A list of payments.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Payment" } } } } ] } } } } }
+      }
+    },
+    "/payments/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Payments"], "summary": "Retrieve a payment", "operationId": "getPayment", "description": "Requires the `payments.read` scope.", "responses": { "200": { "description": "The payment.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Payment" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/staff": {
+      "get": {
+        "tags": ["Staff"], "summary": "List staff", "operationId": "listStaff",
+        "description": "Requires the `staff.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "staff_type", "in": "query", "schema": { "type": "string" }, "description": "e.g. worker, driver, receptionist." }, { "name": "active", "in": "query", "schema": { "type": "boolean" } } ],
+        "responses": { "200": { "description": "A list of staff.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Staff" } } } } ] } } } } }
+      },
+      "post": {
+        "tags": ["Staff"], "summary": "Create a staff member", "operationId": "createStaff",
+        "description": "Creates a team member (auth account + profile + staff record). Requires the `staff.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StaffCreate" } } } },
+        "responses": { "201": { "description": "The created staff member.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Staff" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/staff/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Staff"], "summary": "Retrieve a staff member", "operationId": "getStaff", "description": "Requires the `staff.read` scope.", "responses": { "200": { "description": "The staff member.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Staff" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Staff"], "summary": "Update a staff member", "operationId": "updateStaff", "description": "Requires the `staff.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StaffUpdate" } } } }, "responses": { "200": { "description": "The updated staff member.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Staff" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "delete": { "tags": ["Staff"], "summary": "Remove a staff member", "operationId": "deleteStaff", "description": "Requires the `staff.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/tags": {
+      "get": {
+        "tags": ["Tags"], "summary": "List tags", "operationId": "listTags", "description": "Requires the `tags.read` scope.",
+        "responses": { "200": { "description": "A list of tags.", "content": { "application/json": { "schema": { "type": "object", "properties": { "object": { "type": "string", "example": "list" }, "data": { "type": "array", "items": { "$ref": "#/components/schemas/Tag" } } } } } } } }
+      },
+      "post": {
+        "tags": ["Tags"], "summary": "Create a tag", "operationId": "createTag", "description": "Requires the `tags.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["name"], "properties": { "name": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "The created tag.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Tag" } } } } }
+      }
+    },
+    "/tags/{name}": {
+      "parameters": [ { "name": "name", "in": "path", "required": true, "schema": { "type": "string" }, "description": "The tag name (URL-encoded)." } ],
+      "delete": { "tags": ["Tags"], "summary": "Delete a tag", "operationId": "deleteTag", "description": "Requires the `tags.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } } } }
+    },
+    "/notes": {
+      "get": {
+        "tags": ["Notes"], "summary": "List notes", "operationId": "listNotes", "description": "Requires the `notes.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "contact_id", "in": "query", "schema": { "type": "string" }, "description": "Only notes for this contact." } ],
+        "responses": { "200": { "description": "A list of notes.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Note" } } } } ] } } } } }
+      },
+      "post": {
+        "tags": ["Notes"], "summary": "Create a note", "operationId": "createNote", "description": "Requires the `notes.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NoteCreate" } } } },
+        "responses": { "201": { "description": "The created note.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/notes/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Notes"], "summary": "Retrieve a note", "operationId": "getNote", "description": "Requires the `notes.read` scope.", "responses": { "200": { "description": "The note.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "delete": { "tags": ["Notes"], "summary": "Delete a note", "operationId": "deleteNote", "description": "Requires the `notes.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/automations": {
+      "get": {
+        "tags": ["Automations"], "summary": "List automations", "operationId": "listAutomations", "description": "Requires the `automations.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
+        "responses": { "200": { "description": "A list of automations.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Automation" } } } } ] } } } } }
+      }
+    },
+    "/automations/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Automations"], "summary": "Retrieve an automation", "operationId": "getAutomation", "description": "Requires the `automations.read` scope.", "responses": { "200": { "description": "The automation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Automation" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Automations"], "summary": "Activate / pause an automation", "operationId": "updateAutomation", "description": "Set `status` to `active`, `paused` or `draft`. Requires the `automations.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string", "enum": ["active", "paused", "draft"] }, "name": { "type": "string" } } } } } }, "responses": { "200": { "description": "The updated automation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Automation" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/forms": {
+      "get": {
+        "tags": ["Forms"], "summary": "List forms & surveys", "operationId": "listForms", "description": "Requires the `forms.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["form", "survey"] } } ],
+        "responses": { "200": { "description": "A list of forms.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Form" } } } } ] } } } } }
+      },
+      "post": {
+        "tags": ["Forms"], "summary": "Create a form or survey", "operationId": "createForm", "description": "Requires the `forms.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FormCreate" } } } },
+        "responses": { "201": { "description": "The created form.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Form" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/forms/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Forms"], "summary": "Retrieve a form", "operationId": "getForm", "description": "Requires the `forms.read` scope.", "responses": { "200": { "description": "The form.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Form" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Forms"], "summary": "Update a form", "operationId": "updateForm", "description": "Requires the `forms.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FormCreate" } } } }, "responses": { "200": { "description": "The updated form.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Form" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "delete": { "tags": ["Forms"], "summary": "Delete a form", "operationId": "deleteForm", "description": "Requires the `forms.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
+    "/forms/{id}/submissions": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": {
+        "tags": ["Forms"], "summary": "List form submissions", "operationId": "listFormSubmissions", "description": "Requires the `forms.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
+        "responses": { "200": { "description": "A list of submissions.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/FormSubmission" } } } } ] } } } }, "404": { "$ref": "#/components/responses/NotFound" } }
+      }
+    },
+    "/conversations": {
+      "get": {
+        "tags": ["Conversations"], "summary": "List conversations", "operationId": "listConversations",
+        "description": "Requires the `conversations.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
+        "responses": { "200": { "description": "A list of conversations.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Conversation" } } } } ] } } } } }
+      }
+    },
+    "/conversations/{id}/messages": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": {
+        "tags": ["Conversations"], "summary": "List messages in a conversation", "operationId": "listConversationMessages",
+        "description": "Requires the `conversations.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
+        "responses": { "200": { "description": "A list of messages.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Message" } } } } ] } } } }, "404": { "$ref": "#/components/responses/NotFound" } }
+      }
+    },
+    "/messages": {
+      "post": {
+        "tags": ["Messages"], "summary": "Send a message", "operationId": "sendMessage",
+        "description": "Sends an SMS or email to a contact through your ranch's configured channel. Requires the `messages.send` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageSend" } } } },
+        "responses": {
+          "201": { "description": "The message was accepted for delivery.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageSent" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "422": { "description": "The message could not be sent (e.g. no channel configured).", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "mxp_live_…", "description": "Send your API token as `Authorization: Bearer mxp_live_…`." }
+    },
+    "parameters": {
+      "limit": { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }, "description": "Number of items to return (1–100)." },
+      "offset": { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0, "minimum": 0 }, "description": "Number of items to skip for pagination." },
+      "pathId": { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "The resource id." }
+    },
+    "responses": {
+      "Unauthorized": { "description": "Missing, invalid, revoked or expired token.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "Forbidden": { "description": "The token lacks the required scope.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "NotFound": { "description": "The resource does not exist in your business.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "BadRequest": { "description": "Missing or invalid parameters.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": { "error": { "type": "object", "properties": {
+          "type": { "type": "string", "example": "permission_error" },
+          "code": { "type": "string", "example": "insufficient_scope" },
+          "message": { "type": "string", "example": "This token is missing the required scope: contacts.write." }
+        } } }
+      },
+      "List": {
+        "type": "object",
+        "properties": {
+          "object": { "type": "string", "example": "list" },
+          "data": { "type": "array", "items": {} },
+          "limit": { "type": "integer", "example": 20 },
+          "offset": { "type": "integer", "example": 0 },
+          "total": { "type": "integer", "nullable": true, "example": 137 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "Deleted": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "object": { "type": "string" }, "deleted": { "type": "boolean", "example": true } }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Unique contact id." },
+          "object": { "type": "string", "example": "contact" },
+          "full_name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string", "nullable": true },
+          "address": { "type": "string", "nullable": true },
+          "city": { "type": "string", "nullable": true },
+          "state": { "type": "string", "nullable": true },
+          "zip_code": { "type": "string", "nullable": true },
+          "country": { "type": "string", "nullable": true },
+          "membership_tier": { "type": "string", "example": "bronze" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "loyalty_points": { "type": "integer" },
+          "avatar_url": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "pets": { "type": "array", "description": "The contact's pets (included when retrieving a single contact).", "items": { "$ref": "#/components/schemas/Pet" } }
+        }
+      },
+      "ContactCreate": {
+        "type": "object", "required": ["full_name", "email"],
+        "properties": {
+          "full_name": { "type": "string" }, "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" }, "address": { "type": "string" }, "city": { "type": "string" },
+          "state": { "type": "string" }, "zip_code": { "type": "string" }, "country": { "type": "string" },
+          "membership_tier": { "type": "string" }, "tags": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "ContactUpdate": {
+        "type": "object",
+        "properties": {
+          "full_name": { "type": "string" }, "phone": { "type": "string" }, "address": { "type": "string" },
+          "city": { "type": "string" }, "state": { "type": "string" }, "zip_code": { "type": "string" },
+          "country": { "type": "string" }, "membership_tier": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } }, "avatar_url": { "type": "string" }
+        }
+      },
+      "Pet": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "pet" },
+          "contact_id": { "type": "string", "description": "The owning contact's id." },
+          "name": { "type": "string" }, "type": { "type": "string", "example": "dog" }, "breed": { "type": "string" },
+          "age": { "type": "string" }, "weight": { "type": "string" }, "gender": { "type": "string" },
+          "allergies": { "type": "string", "nullable": true }, "health_notes": { "type": "string", "nullable": true },
+          "is_vaccinated": { "type": "boolean", "nullable": true }, "status": { "type": "string", "example": "active" },
+          "image_url": { "type": "string", "nullable": true }, "created_at": { "type": "string", "format": "date-time" },
+          "contact": { "type": "object", "nullable": true, "description": "The owning contact (included when retrieving a single pet).", "properties": { "id": { "type": "string" }, "full_name": { "type": "string" }, "email": { "type": "string" }, "phone": { "type": "string" } } }
+        }
+      },
+      "PetCreate": {
+        "type": "object", "required": ["name", "contact_id"],
+        "properties": {
+          "contact_id": { "type": "string" }, "name": { "type": "string" }, "type": { "type": "string" },
+          "breed": { "type": "string" }, "age": { "type": "string" }, "weight": { "type": "string" },
+          "gender": { "type": "string" }, "allergies": { "type": "string" }, "health_notes": { "type": "string" },
+          "is_vaccinated": { "type": "boolean" }, "status": { "type": "string" }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "booking" },
+          "contact_id": { "type": "string" }, "service_type": { "type": "string", "nullable": true },
+          "sub_services": { "type": "array", "items": { "type": "object" } },
+          "check_in_date": { "type": "string", "format": "date" }, "check_out_date": { "type": "string", "format": "date", "nullable": true },
+          "status": { "type": "string", "example": "pending" }, "payment_status": { "type": "string", "example": "unpaid" },
+          "total_amount": { "type": "number", "nullable": true }, "assigned_staff_id": { "type": "string", "nullable": true },
+          "has_pickup": { "type": "boolean" }, "has_dropoff": { "type": "boolean" }, "created_at": { "type": "string", "format": "date-time" },
+          "contact": { "type": "object", "nullable": true, "description": "The booking's contact (included when retrieving a single booking).", "properties": { "id": { "type": "string" }, "full_name": { "type": "string" }, "email": { "type": "string" }, "phone": { "type": "string" } } }
+        }
+      },
+      "BookingCreate": {
+        "type": "object", "required": ["contact_id", "check_in_date"],
+        "properties": {
+          "contact_id": { "type": "string" }, "service_type": { "type": "string" },
+          "sub_services": { "type": "array", "items": { "type": "object" }, "description": "List of { name, price } line items." },
+          "check_in_date": { "type": "string", "format": "date" }, "check_out_date": { "type": "string", "format": "date" },
+          "total_amount": { "type": "number" }, "status": { "type": "string" }, "payment_status": { "type": "string" },
+          "has_pickup": { "type": "boolean" }, "has_dropoff": { "type": "boolean" }
+        }
+      },
+      "BookingUpdate": {
+        "type": "object",
+        "properties": {
+          "service_type": { "type": "string" }, "sub_services": { "type": "array", "items": { "type": "object" } },
+          "check_in_date": { "type": "string", "format": "date" }, "check_out_date": { "type": "string", "format": "date" },
+          "total_amount": { "type": "number" }, "payment_status": { "type": "string" },
+          "assigned_staff_id": { "type": "string" }, "status": { "type": "string" }
+        }
+      },
+      "Service": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "service" },
+          "title": { "type": "string" }, "description": { "type": "string" }, "category": { "type": "string", "example": "boarding" },
+          "base_price": { "type": "number" }, "price_type": { "type": "string", "example": "nightly" },
+          "price_unit": { "type": "string", "example": "per_night" }, "is_active": { "type": "boolean" },
+          "is_package": { "type": "boolean" }, "created_at": { "type": "string", "format": "date-time" },
+          "sub_services": { "type": "array", "description": "Child/package services (included when retrieving a single service).", "items": { "$ref": "#/components/schemas/Service" } }
+        }
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "conversation" },
+          "customer_id": { "type": "string" }, "staff_id": { "type": "string", "nullable": true },
+          "channel": { "type": "string", "example": "email" }, "last_message": { "type": "string", "nullable": true },
+          "last_message_time": { "type": "string", "format": "date-time", "nullable": true }, "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "message" },
+          "conversation_id": { "type": "string" }, "sender_id": { "type": "string" }, "receiver_id": { "type": "string" },
+          "channel": { "type": "string", "example": "email" }, "subject": { "type": "string", "nullable": true },
+          "text": { "type": "string" }, "is_read": { "type": "boolean" }, "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "MessageSend": {
+        "type": "object", "required": ["channel"],
+        "description": "Provide **contact_id** (recommended) OR **to**. The recipient must be an existing contact in your business — you cannot message arbitrary numbers or addresses.",
+        "properties": {
+          "channel": { "type": "string", "enum": ["sms", "email"] },
+          "contact_id": { "type": "string", "description": "The contact to message; its phone (sms) or email (email) is used. Preferred over `to`." },
+          "to": { "type": "string", "description": "Phone (sms) or email (email). Must match one of your existing contacts, or the request is rejected." },
+          "message": { "type": "string", "description": "Plain-text / markdown body. Required for sms." },
+          "subject": { "type": "string", "description": "Email subject (email only)." },
+          "html": { "type": "string", "description": "Optional HTML body for email." },
+          "cc": { "type": "string" }, "bcc": { "type": "string" }
+        }
+      },
+      "MessageSent": {
+        "type": "object",
+        "properties": {
+          "object": { "type": "string", "example": "message" }, "channel": { "type": "string", "example": "sms" },
+          "to": { "type": "string" }, "contact_id": { "type": "string", "description": "The contact that was messaged." },
+          "status": { "type": "string", "example": "sent" },
+          "provider_response": { "type": "object" }
+        }
+      },
+      "ServiceCreate": {
+        "type": "object", "required": ["title"],
+        "properties": {
+          "title": { "type": "string" }, "description": { "type": "string" }, "category": { "type": "string", "example": "boarding" },
+          "base_price": { "type": "number" }, "price_type": { "type": "string", "example": "fixed" },
+          "price_unit": { "type": "string", "example": "fixed" }, "is_active": { "type": "boolean" }, "is_package": { "type": "boolean" }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "payment" },
+          "invoice_number": { "type": "string", "example": "INV-20260708-12345" },
+          "contact_id": { "type": "string", "nullable": true }, "booking_id": { "type": "string", "nullable": true },
+          "amount": { "type": "number" }, "payment_method": { "type": "string", "example": "CARD" },
+          "booking_type": { "type": "string", "nullable": true }, "status": { "type": "string", "example": "paid" },
+          "payment_date": { "type": "string", "format": "date-time" }, "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Staff": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "staff" }, "user_id": { "type": "string" },
+          "full_name": { "type": "string" }, "email": { "type": "string", "format": "email" }, "phone": { "type": "string", "nullable": true },
+          "staff_type": { "type": "string", "example": "worker" }, "service_type": { "type": "string", "nullable": true },
+          "is_active": { "type": "boolean" }, "is_online": { "type": "boolean" }, "avatar_url": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "StaffCreate": {
+        "type": "object", "required": ["full_name", "email"],
+        "properties": {
+          "full_name": { "type": "string" }, "email": { "type": "string", "format": "email" }, "phone": { "type": "string" },
+          "staff_type": { "type": "string", "description": "worker | driver | receptionist | …", "example": "worker" },
+          "service_type": { "type": "string" }
+        }
+      },
+      "StaffUpdate": {
+        "type": "object",
+        "properties": {
+          "full_name": { "type": "string" }, "phone": { "type": "string" }, "staff_type": { "type": "string" },
+          "service_type": { "type": "string" }, "is_active": { "type": "boolean" }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": { "object": { "type": "string", "example": "tag" }, "name": { "type": "string", "example": "vip" } }
+      },
+      "Note": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "note" }, "contact_id": { "type": "string" },
+          "body": { "type": "string" }, "created_by": { "type": "string", "nullable": true }, "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "NoteCreate": {
+        "type": "object", "required": ["contact_id", "body"],
+        "properties": { "contact_id": { "type": "string" }, "body": { "type": "string" } }
+      },
+      "Automation": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "automation" }, "name": { "type": "string" },
+          "status": { "type": "string", "example": "active" }, "trigger_type": { "type": "string", "example": "contact.created" },
+          "folder_id": { "type": "string", "nullable": true }, "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Form": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "form" }, "title": { "type": "string" },
+          "type": { "type": "string", "enum": ["form", "survey"] }, "status": { "type": "string", "example": "published" },
+          "fields": { "type": "array", "items": { "type": "object" } }, "settings": { "type": "object" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "FormCreate": {
+        "type": "object", "required": ["title"],
+        "properties": {
+          "title": { "type": "string" }, "type": { "type": "string", "enum": ["form", "survey"] },
+          "fields": { "type": "array", "items": { "type": "object" } }, "settings": { "type": "object" },
+          "status": { "type": "string" }
+        }
+      },
+      "FormSubmission": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "form_submission" },
+          "form_id": { "type": "string" }, "contact_id": { "type": "string", "nullable": true },
+          "data": { "type": "object", "description": "The submitted answers." }, "created_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}
