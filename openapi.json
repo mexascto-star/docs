@@ -16,13 +16,12 @@
     { "name": "Pets", "description": "Pets that belong to your contacts." },
     { "name": "Bookings", "description": "Reservations for boarding, grooming, daycare and more." },
     { "name": "Services", "description": "Your service catalog and pricing." },
+    { "name": "Sub-services", "description": "Add-ons / line items that belong to a service." },
     { "name": "Payments", "description": "Payments and invoices." },
     { "name": "Staff", "description": "Your team members (workers, drivers, receptionists)." },
     { "name": "Tags", "description": "The tag catalog for segmenting contacts." },
     { "name": "Notes", "description": "Free-text notes attached to contacts." },
-    { "name": "Automations", "description": "Automation workflows." },
-    { "name": "Forms", "description": "Forms, surveys and their submissions." },
-    { "name": "Conversations", "description": "Message threads with your contacts." },
+    { "name": "Forms", "description": "Forms and surveys." },
     { "name": "Messages", "description": "Send SMS and email to your contacts." }
   ],
   "paths": {
@@ -141,6 +140,26 @@
       "patch": { "tags": ["Services"], "summary": "Update a service", "operationId": "updateService", "description": "Requires the `services.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceCreate" } } } }, "responses": { "200": { "description": "The updated service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Service" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
       "delete": { "tags": ["Services"], "summary": "Delete a service", "operationId": "deleteService", "description": "Requires the `services.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
     },
+    "/sub-services": {
+      "get": {
+        "tags": ["Sub-services"], "summary": "List sub-services", "operationId": "listSubServices",
+        "description": "Sub-services (add-ons / line items) belonging to your services. Requires the `services.read` scope.",
+        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "service_id", "in": "query", "schema": { "type": "string" }, "description": "Only sub-services of this service." }, { "name": "active", "in": "query", "schema": { "type": "boolean" } } ],
+        "responses": { "200": { "description": "A list of sub-services.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/SubService" } } } } ] } } } } }
+      },
+      "post": {
+        "tags": ["Sub-services"], "summary": "Create a sub-service", "operationId": "createSubService",
+        "description": "Creates a sub-service under a parent service. Requires the `services.write` scope.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubServiceCreate" } } } },
+        "responses": { "201": { "description": "The created sub-service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubService" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/sub-services/{id}": {
+      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
+      "get": { "tags": ["Sub-services"], "summary": "Retrieve a sub-service", "operationId": "getSubService", "description": "Requires the `services.read` scope.", "responses": { "200": { "description": "The sub-service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubService" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Sub-services"], "summary": "Update a sub-service", "operationId": "updateSubService", "description": "Requires the `services.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubServiceUpdate" } } } }, "responses": { "200": { "description": "The updated sub-service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubService" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "delete": { "tags": ["Sub-services"], "summary": "Delete a sub-service", "operationId": "deleteSubService", "description": "Requires the `services.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
+    },
     "/payments": {
       "get": {
         "tags": ["Payments"], "summary": "List payments", "operationId": "listPayments",
@@ -204,61 +223,6 @@
       "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
       "get": { "tags": ["Notes"], "summary": "Retrieve a note", "operationId": "getNote", "description": "Requires the `notes.read` scope.", "responses": { "200": { "description": "The note.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
       "delete": { "tags": ["Notes"], "summary": "Delete a note", "operationId": "deleteNote", "description": "Requires the `notes.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
-    },
-    "/automations": {
-      "get": {
-        "tags": ["Automations"], "summary": "List automations", "operationId": "listAutomations", "description": "Requires the `automations.read` scope.",
-        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
-        "responses": { "200": { "description": "A list of automations.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Automation" } } } } ] } } } } }
-      }
-    },
-    "/automations/{id}": {
-      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
-      "get": { "tags": ["Automations"], "summary": "Retrieve an automation", "operationId": "getAutomation", "description": "Requires the `automations.read` scope.", "responses": { "200": { "description": "The automation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Automation" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
-      "patch": { "tags": ["Automations"], "summary": "Activate / pause an automation", "operationId": "updateAutomation", "description": "Set `status` to `active`, `paused` or `draft`. Requires the `automations.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string", "enum": ["active", "paused", "draft"] }, "name": { "type": "string" } } } } } }, "responses": { "200": { "description": "The updated automation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Automation" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
-    },
-    "/forms": {
-      "get": {
-        "tags": ["Forms"], "summary": "List forms & surveys", "operationId": "listForms", "description": "Requires the `forms.read` scope.",
-        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" }, { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["form", "survey"] } } ],
-        "responses": { "200": { "description": "A list of forms.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Form" } } } } ] } } } } }
-      },
-      "post": {
-        "tags": ["Forms"], "summary": "Create a form or survey", "operationId": "createForm", "description": "Requires the `forms.write` scope.",
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FormCreate" } } } },
-        "responses": { "201": { "description": "The created form.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Form" } } } }, "400": { "$ref": "#/components/responses/BadRequest" } }
-      }
-    },
-    "/forms/{id}": {
-      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
-      "get": { "tags": ["Forms"], "summary": "Retrieve a form", "operationId": "getForm", "description": "Requires the `forms.read` scope.", "responses": { "200": { "description": "The form.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Form" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
-      "patch": { "tags": ["Forms"], "summary": "Update a form", "operationId": "updateForm", "description": "Requires the `forms.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FormCreate" } } } }, "responses": { "200": { "description": "The updated form.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Form" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
-      "delete": { "tags": ["Forms"], "summary": "Delete a form", "operationId": "deleteForm", "description": "Requires the `forms.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
-    },
-    "/forms/{id}/submissions": {
-      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
-      "get": {
-        "tags": ["Forms"], "summary": "List form submissions", "operationId": "listFormSubmissions", "description": "Requires the `forms.read` scope.",
-        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
-        "responses": { "200": { "description": "A list of submissions.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/FormSubmission" } } } } ] } } } }, "404": { "$ref": "#/components/responses/NotFound" } }
-      }
-    },
-    "/conversations": {
-      "get": {
-        "tags": ["Conversations"], "summary": "List conversations", "operationId": "listConversations",
-        "description": "Requires the `conversations.read` scope.",
-        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
-        "responses": { "200": { "description": "A list of conversations.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Conversation" } } } } ] } } } } }
-      }
-    },
-    "/conversations/{id}/messages": {
-      "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
-      "get": {
-        "tags": ["Conversations"], "summary": "List messages in a conversation", "operationId": "listConversationMessages",
-        "description": "Requires the `conversations.read` scope.",
-        "parameters": [ { "$ref": "#/components/parameters/limit" }, { "$ref": "#/components/parameters/offset" } ],
-        "responses": { "200": { "description": "A list of messages.", "content": { "application/json": { "schema": { "allOf": [ { "$ref": "#/components/schemas/List" }, { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Message" } } } } ] } } } }, "404": { "$ref": "#/components/responses/NotFound" } }
-      }
     },
     "/messages": {
       "post": {
@@ -411,30 +375,11 @@
           "id": { "type": "string" }, "object": { "type": "string", "example": "service" },
           "title": { "type": "string", "description": "The service name (same value as `name`)." },
           "name": { "type": "string", "description": "The service name shown in the app." },
-          "parent_id": { "type": "string", "nullable": true, "description": "Set when this is a sub-service of another service." },
           "description": { "type": "string" }, "category": { "type": "string", "example": "boarding" },
           "base_price": { "type": "number" }, "price_type": { "type": "string", "example": "nightly" },
           "price_unit": { "type": "string", "example": "per_night" }, "is_active": { "type": "boolean" },
           "is_package": { "type": "boolean" }, "created_at": { "type": "string", "format": "date-time" },
-          "sub_services": { "type": "array", "description": "Child/package services (included when retrieving a single service).", "items": { "$ref": "#/components/schemas/Service" } }
-        }
-      },
-      "Conversation": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" }, "object": { "type": "string", "example": "conversation" },
-          "customer_id": { "type": "string" }, "staff_id": { "type": "string", "nullable": true },
-          "channel": { "type": "string", "example": "email" }, "last_message": { "type": "string", "nullable": true },
-          "last_message_time": { "type": "string", "format": "date-time", "nullable": true }, "created_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "Message": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" }, "object": { "type": "string", "example": "message" },
-          "conversation_id": { "type": "string" }, "sender_id": { "type": "string" }, "receiver_id": { "type": "string" },
-          "channel": { "type": "string", "example": "email" }, "subject": { "type": "string", "nullable": true },
-          "text": { "type": "string" }, "is_read": { "type": "boolean" }, "created_at": { "type": "string", "format": "date-time" }
+          "sub_services": { "type": "array", "description": "This service's sub-services (included when retrieving a single service).", "items": { "$ref": "#/components/schemas/SubService" } }
         }
       },
       "MessageSend": {
@@ -466,8 +411,38 @@
           "description": { "type": "string" },
           "category": { "type": "string", "example": "boarding", "description": "Lower-cased on save (boarding, grooming, daycare, training, addon, retail)." },
           "base_price": { "type": "number" }, "price_type": { "type": "string", "example": "fixed" },
-          "price_unit": { "type": "string", "example": "fixed" }, "is_active": { "type": "boolean" }, "is_package": { "type": "boolean" },
-          "parent_id": { "type": "string", "description": "Optional — set to another service's id to create this as a sub-service." }
+          "price_unit": { "type": "string", "example": "fixed" }, "is_active": { "type": "boolean" }, "is_package": { "type": "boolean" }
+        }
+      },
+      "SubService": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }, "object": { "type": "string", "example": "sub_service" },
+          "service_id": { "type": "string", "description": "The parent service this belongs to." },
+          "name": { "type": "string" }, "description": { "type": "string", "nullable": true },
+          "price": { "type": "number" }, "duration_minutes": { "type": "integer", "nullable": true },
+          "sort_order": { "type": "integer" }, "is_active": { "type": "boolean" },
+          "pricing_model": { "type": "string", "example": "fixed" }, "unit_label": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SubServiceCreate": {
+        "type": "object", "required": ["service_id", "name"],
+        "properties": {
+          "service_id": { "type": "string", "description": "The parent service's id (must be a service in your business)." },
+          "name": { "type": "string" }, "description": { "type": "string" },
+          "price": { "type": "number" }, "duration_minutes": { "type": "integer" },
+          "sort_order": { "type": "integer" }, "is_active": { "type": "boolean" },
+          "pricing_model": { "type": "string", "example": "fixed" }, "unit_label": { "type": "string" }
+        }
+      },
+      "SubServiceUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }, "description": { "type": "string" },
+          "price": { "type": "number" }, "duration_minutes": { "type": "integer" },
+          "sort_order": { "type": "integer" }, "is_active": { "type": "boolean" },
+          "pricing_model": { "type": "string" }, "unit_label": { "type": "string" }
         }
       },
       "Payment": {
@@ -520,40 +495,6 @@
       "NoteCreate": {
         "type": "object", "required": ["contact_id", "body"],
         "properties": { "contact_id": { "type": "string" }, "body": { "type": "string" } }
-      },
-      "Automation": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" }, "object": { "type": "string", "example": "automation" }, "name": { "type": "string" },
-          "status": { "type": "string", "example": "active" }, "trigger_type": { "type": "string", "example": "contact.created" },
-          "folder_id": { "type": "string", "nullable": true }, "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "Form": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" }, "object": { "type": "string", "example": "form" }, "title": { "type": "string" },
-          "type": { "type": "string", "enum": ["form", "survey"] }, "status": { "type": "string", "example": "published" },
-          "fields": { "type": "array", "items": { "type": "object" } }, "settings": { "type": "object" },
-          "created_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "FormCreate": {
-        "type": "object", "required": ["title"],
-        "properties": {
-          "title": { "type": "string" }, "type": { "type": "string", "enum": ["form", "survey"] },
-          "fields": { "type": "array", "items": { "type": "object" } }, "settings": { "type": "object" },
-          "status": { "type": "string" }
-        }
-      },
-      "FormSubmission": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" }, "object": { "type": "string", "example": "form_submission" },
-          "form_id": { "type": "string" }, "contact_id": { "type": "string", "nullable": true },
-          "data": { "type": "object", "description": "The submitted answers." }, "created_at": { "type": "string", "format": "date-time" }
-        }
       }
     }
   }
