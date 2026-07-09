@@ -37,8 +37,7 @@
           "pagination",
           "errors",
           "rate-limits",
-          "idempotency",
-          "troubleshooting"
+          "idempotency"
         ]
       },
       {
