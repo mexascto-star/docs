@@ -3,3 +3,58 @@ title: "List form submissions"
 description: "Returns all submissions for a form. Requires the forms.read scope."
 openapi: "GET /forms/{id}/submissions"
 ---
+
+Returns all submissions for a specific form or survey. Each submission contains the raw answers and the `contact_id` of who submitted it.
+
+**Required scope:** `forms.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /forms/{id}/submissions
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/forms/frm_oo5j6k/submissions" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "sub_qq7l8m",
+      "object": "form_submission",
+      "form_id": "frm_oo5j6k",
+      "contact_id": "usr_6f1c3d",
+      "data": {
+        "pet_name": "Bella",
+        "pet_type": "dog",
+        "allergies": "None",
+        "vet_name": "Dr. Rodriguez",
+        "emergency_contact": "+15125559999"
+      },
+      "created_at": "2026-07-05T09:30:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

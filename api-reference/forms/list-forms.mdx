@@ -3,3 +3,55 @@ title: "List forms & surveys"
 description: "Returns a paginated list of forms and surveys. Requires the forms.read scope."
 openapi: "GET /forms"
 ---
+
+Returns all forms and surveys in your ranch. Use `?type=form` for intake forms and waivers, `?type=survey` for post-stay feedback.
+
+**Required scope:** `forms.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /forms
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
+| `type` | string | `form` or `survey` |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/forms?type=form" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "frm_oo5j6k",
+      "object": "form",
+      "title": "New Pet Intake Form",
+      "type": "form",
+      "status": "published",
+      "fields": [],
+      "settings": {},
+      "created_at": "2026-02-01T00:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

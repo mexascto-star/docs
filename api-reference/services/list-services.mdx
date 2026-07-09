@@ -3,3 +3,60 @@ title: "List services"
 description: "Returns your service catalog. Requires the services.read scope."
 openapi: "GET /services"
 ---
+
+Returns your priced service catalog. Use `active=true` to get only services currently available for booking.
+
+**Required scope:** `services.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /services
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
+| `active` | boolean | `true` = active services only |
+| `category` | string | `boarding`, `grooming`, `daycare`, `training`, `addon`, `retail` |
+| `query` | string | Free-text search over service title |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/services?active=true&category=boarding" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "svc_ff6a7b",
+      "object": "service",
+      "title": "Standard Boarding",
+      "description": "Overnight stay in a private suite with 3 walks per day.",
+      "category": "boarding",
+      "base_price": 55,
+      "price_type": "nightly",
+      "price_unit": "per_night",
+      "is_active": true,
+      "is_package": false,
+      "created_at": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

@@ -3,3 +3,53 @@ title: "List notes"
 description: "Returns notes attached to contacts. Requires the notes.read scope."
 openapi: "GET /notes"
 ---
+
+Returns free-text notes attached to contacts. Filter by `contact_id` when building a customer profile view.
+
+**Required scope:** `notes.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /notes
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
+| `contact_id` | string | Filter to notes for this contact |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/notes?contact_id=usr_6f1c3d" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "note_kk1f2g",
+      "object": "note",
+      "contact_id": "usr_6f1c3d",
+      "body": "Jane prefers afternoon pickups. Bella gets anxious during thunderstorms.",
+      "created_by": "stf_ee5f6a",
+      "created_at": "2026-07-01T10:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

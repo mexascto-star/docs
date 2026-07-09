@@ -3,3 +3,65 @@ title: "List automations"
 description: "Returns a paginated list of automation workflows. Requires the automations.read scope."
 openapi: "GET /automations"
 ---
+
+Returns all automation workflows in your ranch. Use this to audit which automations are active, paused, or in draft.
+
+**Required scope:** `automations.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /automations
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Status values
+
+| Status | Meaning |
+| --- | --- |
+| `active` | Running — fires when trigger condition is met |
+| `paused` | Temporarily stopped — trigger events are ignored |
+| `draft` | Not yet activated |
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/automations \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "auto_mm3h4i",
+      "object": "automation",
+      "name": "New Contact Welcome SMS",
+      "status": "active",
+      "trigger_type": "contact.created",
+      "folder_id": null,
+      "created_at": "2026-03-01T00:00:00.000Z",
+      "updated_at": "2026-06-15T10:00:00.000Z"
+    },
+    {
+      "id": "auto_nn4i5j",
+      "object": "automation",
+      "name": "Booking Reminder — 24h Before",
+      "status": "active",
+      "trigger_type": "booking.checkin_approaching",
+      "folder_id": null,
+      "created_at": "2026-04-01T00:00:00.000Z",
+      "updated_at": "2026-04-01T00:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 2,
+  "has_more": false
+}
+```

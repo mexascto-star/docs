@@ -3,3 +3,53 @@ title: "Update a service"
 description: "Updates a service in your catalog. Requires the services.write scope."
 openapi: "PATCH /services/{id}"
 ---
+
+Updates one or more fields on a service. Common use cases: toggling `is_active`, adjusting pricing, or updating the description.
+
+**Required scope:** `services.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+PATCH /services/{id}
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
+
+## Example — raise the price
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/services/svc_ff6a7b \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "base_price": 60 }'
+```
+
+## Example — deactivate a service
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/services/svc_ff6a7b \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "is_active": false }'
+```
+
+## Response `200`
+
+```json
+{
+  "id": "svc_ff6a7b",
+  "object": "service",
+  "title": "Standard Boarding",
+  "description": "Overnight stay in a private suite with 3 walks per day.",
+  "category": "boarding",
+  "base_price": 60,
+  "price_type": "nightly",
+  "price_unit": "per_night",
+  "is_active": true,
+  "is_package": false,
+  "created_at": "2026-01-01T00:00:00.000Z"
+}
+```

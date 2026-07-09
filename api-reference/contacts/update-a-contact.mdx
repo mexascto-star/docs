@@ -3,3 +3,71 @@ title: "Update a contact"
 description: "Updates the supplied fields on a contact. Requires the contacts.write scope."
 openapi: "PATCH /contacts/{id}"
 ---
+
+Updates one or more fields on an existing contact. Only the fields you send are changed — all others remain as-is (PATCH semantics).
+
+**Required scope:** `contacts.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+PATCH /contacts/{id}
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
+
+## Updatable fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `full_name` | string | Display name |
+| `phone` | string | Phone number |
+| `address` | string | Street address |
+| `city` | string | City |
+| `state` | string | State or province |
+| `zip_code` | string | Postal code |
+| `country` | string | Country |
+| `membership_tier` | string | e.g. `bronze`, `silver`, `gold` |
+| `tags` | string\[\] | **Replaces** the entire tag list |
+| `avatar_url` | string | URL to profile photo |
+
+<Warning>
+  `tags` is a **replace** operation. The array you send becomes the contact's complete tag list. To add one tag without removing others, read the current `tags` first and include them all in your PATCH.
+</Warning>
+
+<Note>
+  `email`, user role, and business assignment cannot be changed via the API.
+</Note>
+
+## Example
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/contacts/usr_9a2b4c \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "membership_tier": "silver",
+    "tags": ["new-client", "referral"]
+  }'
+```
+
+## Response `200`
+
+```json
+{
+  "id": "usr_9a2b4c",
+  "object": "contact",
+  "full_name": "John Smith",
+  "email": "john@example.com",
+  "phone": "+15125550199",
+  "city": "Austin",
+  "state": "TX",
+  "membership_tier": "silver",
+  "tags": ["new-client", "referral"],
+  "loyalty_points": 0,
+  "avatar_url": null,
+  "created_at": "2026-07-09T14:22:00.000Z"
+}
+```

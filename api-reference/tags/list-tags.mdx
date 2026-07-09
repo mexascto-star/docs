@@ -3,3 +3,37 @@ title: "List tags"
 description: "Returns all tags in your tag catalog. Requires the tags.read scope."
 openapi: "GET /tags"
 ---
+
+Returns your tag catalog — the labels you can apply to contacts for segmentation. To find contacts with a specific tag, use `GET /contacts?tag=<name>`.
+
+**Required scope:** `tags.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /tags
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/tags \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    { "object": "tag", "name": "vip" },
+    { "object": "tag", "name": "dog-owner" },
+    { "object": "tag", "name": "new-client" },
+    { "object": "tag", "name": "referral" }
+  ]
+}
+```

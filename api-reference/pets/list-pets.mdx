@@ -3,3 +3,64 @@ title: "List pets"
 description: "Returns a paginated list of pets. Requires the pets.read scope."
 openapi: "GET /pets"
 ---
+
+Returns all pets in your ranch. Use `contact_id` to fetch every pet for a specific customer in one call.
+
+**Required scope:** `pets.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /pets
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip for pagination |
+| `contact_id` | string | Only pets belonging to this contact |
+| `type` | string | Animal type filter: `dog`, `cat`, `bird`, etc. |
+| `query` | string | Free-text search over name and breed |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/pets?contact_id=usr_6f1c3d" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "pet_aa1b2c",
+      "object": "pet",
+      "contact_id": "usr_6f1c3d",
+      "name": "Bella",
+      "type": "dog",
+      "breed": "Labrador Retriever",
+      "age": "3",
+      "weight": "65 lbs",
+      "gender": "female",
+      "allergies": null,
+      "health_notes": "Annual checkup due August 2026",
+      "is_vaccinated": true,
+      "status": "active",
+      "image_url": null,
+      "created_at": "2026-02-01T09:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

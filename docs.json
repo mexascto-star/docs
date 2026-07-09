@@ -219,8 +219,5 @@
     "body": {
       "family": "Inter"
     }
-  },
-  "api": {
-    "openapi": "openapi.json"
   }
 }

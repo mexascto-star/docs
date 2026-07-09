@@ -3,3 +3,84 @@ title: "Create a contact"
 description: "Creates a new contact. Requires the contacts.write scope."
 openapi: "POST /contacts"
 ---
+
+Creates a new customer in your ranch. If a user with the same email already exists on the platform, they are linked to your business — no duplicate is created.
+
+**Required scope:** `contacts.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+<Tip>
+  Send an `Idempotency-Key` header on this request so retries never create duplicate contacts.
+</Tip>
+
+## Request
+
+```bash
+POST /contacts
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `full_name` | string | ✅ | Contact's display name |
+| `email` | string | ✅ | Email address. If already exists, the account is linked. |
+| `phone` | string | — | Phone number (E.164 recommended: `+15125550199`) |
+| `address` | string | — | Street address |
+| `city` | string | — | City |
+| `state` | string | — | State or province |
+| `zip_code` | string | — | Postal code |
+| `country` | string | — | Country |
+| `membership_tier` | string | — | e.g. `bronze`, `silver`, `gold` |
+| `tags` | string\[\] | — | Tags to apply immediately |
+
+## Example
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/contacts \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -d '{
+    "full_name": "John Smith",
+    "email": "john@example.com",
+    "phone": "+15125550199",
+    "city": "Austin",
+    "state": "TX",
+    "membership_tier": "bronze",
+    "tags": ["new-client"]
+  }'
+```
+
+## Response `201`
+
+```json
+{
+  "id": "usr_9a2b4c",
+  "object": "contact",
+  "full_name": "John Smith",
+  "email": "john@example.com",
+  "phone": "+15125550199",
+  "address": null,
+  "city": "Austin",
+  "state": "TX",
+  "zip_code": null,
+  "country": null,
+  "membership_tier": "bronze",
+  "tags": ["new-client"],
+  "loyalty_points": 0,
+  "avatar_url": null,
+  "created_at": "2026-07-09T14:22:00.000Z"
+}
+```
+
+## Error responses
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `400` | `invalid_request_error` | Missing required field (`full_name` or `email`) |
+| `401` | `authentication_error` | Missing or invalid token |
+| `403` | `permission_error` | Token missing `contacts.write` scope |

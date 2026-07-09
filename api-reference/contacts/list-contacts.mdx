@@ -3,3 +3,72 @@ title: "List contacts"
 description: "Returns a paginated list of contacts. Requires the contacts.read scope."
 openapi: "GET /contacts"
 ---
+
+Use this endpoint to browse, search, or filter the customers in your ranch. Combine filters to narrow results — for example, find all VIP customers by tag, or search by name.
+
+**Required scope:** `contacts.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /contacts
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip for pagination (default 0) |
+| `email` | string | Exact email match (case-insensitive) |
+| `phone` | string | Exact phone number match |
+| `tag` | string | Only contacts that have this tag |
+| `query` | string | Free-text search over name, email, and phone |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/contacts?query=smith&limit=2" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "usr_6f1c3d",
+      "object": "contact",
+      "full_name": "Jane Smith",
+      "email": "jane@example.com",
+      "phone": "+15125550123",
+      "address": "123 Main St",
+      "city": "Austin",
+      "state": "TX",
+      "zip_code": "78701",
+      "country": "US",
+      "membership_tier": "gold",
+      "tags": ["vip", "dog-owner"],
+      "loyalty_points": 240,
+      "avatar_url": null,
+      "created_at": "2026-01-15T10:00:00.000Z"
+    }
+  ],
+  "limit": 2,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```
+
+## Error responses
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `401` | `authentication_error` | Missing or invalid token |
+| `403` | `permission_error` | Token missing `contacts.read` scope |

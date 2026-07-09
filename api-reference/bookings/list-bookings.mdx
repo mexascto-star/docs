@@ -3,3 +3,68 @@ title: "List bookings"
 description: "Returns a paginated list of bookings. Requires the bookings.read scope."
 openapi: "GET /bookings"
 ---
+
+Returns bookings across your ranch with rich filtering. Use `from`/`to` to scope to a date range, `status` to build operational views, and `contact_id` to pull a customer's reservation history.
+
+**Required scope:** `bookings.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /bookings
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip for pagination |
+| `contact_id` | string | Filter to a specific customer |
+| `status` | string | `pending`, `in_progress`, `completed`, `cancelled` |
+| `service_type` | string | `boarding`, `grooming`, `daycare`, `training` |
+| `from` | date | Check-in date on or after (YYYY-MM-DD) |
+| `to` | date | Check-in date on or before (YYYY-MM-DD) |
+
+## Example — today's pending bookings
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/bookings?status=pending&from=2026-07-09&to=2026-07-09" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "bkg_cc3d4e",
+      "object": "booking",
+      "contact_id": "usr_6f1c3d",
+      "service_type": "boarding",
+      "sub_services": [
+        { "name": "Standard Boarding", "price": 55 },
+        { "name": "Bath & Brush", "price": 25 }
+      ],
+      "check_in_date": "2026-07-09",
+      "check_out_date": "2026-07-12",
+      "status": "pending",
+      "payment_status": "unpaid",
+      "total_amount": 240,
+      "assigned_staff_id": null,
+      "has_pickup": false,
+      "has_dropoff": false,
+      "created_at": "2026-07-01T09:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

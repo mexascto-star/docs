@@ -3,3 +3,43 @@ title: "Delete a contact"
 description: "Permanently deletes a contact. Requires the contacts.write scope."
 openapi: "DELETE /contacts/{id}"
 ---
+
+Permanently removes a contact from your ranch. This action is immediate and cannot be undone.
+
+**Required scope:** `contacts.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+<Warning>
+  Deletion is permanent. Associated pets, bookings, and notes are not automatically removed — clean those up first if needed.
+</Warning>
+
+## Request
+
+```bash
+DELETE /contacts/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Example
+
+```bash
+curl -X DELETE https://mex-pet-app.vercel.app/api/v1/contacts/usr_9a2b4c \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "id": "usr_9a2b4c",
+  "object": "contact",
+  "deleted": true
+}
+```
+
+## Error responses
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `404` | `not_found` | Contact does not exist in your business |

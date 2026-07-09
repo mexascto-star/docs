@@ -3,3 +3,66 @@ title: "Retrieve a service"
 description: "Retrieves a single service by ID. Requires the services.read scope."
 openapi: "GET /services/{id}"
 ---
+
+Retrieves a service by ID. For packages (`is_package: true`), the response includes a `sub_services` array with all child services that make up the bundle.
+
+**Required scope:** `services.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Request
+
+```bash
+GET /services/{id}
+Authorization: Bearer mxp_live_your_token_here
+```
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/services/svc_gg7b8c \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "id": "svc_gg7b8c",
+  "object": "service",
+  "title": "Weekend Boarding Package",
+  "category": "boarding",
+  "base_price": 149,
+  "price_type": "fixed",
+  "price_unit": "fixed",
+  "is_active": true,
+  "is_package": true,
+  "created_at": "2026-07-09T17:00:00.000Z",
+  "sub_services": [
+    {
+      "id": "svc_hh8c9d",
+      "object": "service",
+      "title": "2-Night Boarding",
+      "category": "boarding",
+      "base_price": 110,
+      "price_type": "fixed",
+      "is_active": true,
+      "is_package": false,
+      "created_at": "2026-07-09T17:00:00.000Z"
+    },
+    {
+      "id": "svc_ii9d0e",
+      "object": "service",
+      "title": "Bath & Brush",
+      "category": "grooming",
+      "base_price": 39,
+      "price_type": "fixed",
+      "is_active": true,
+      "is_package": false,
+      "created_at": "2026-07-09T17:00:00.000Z"
+    }
+  ]
+}
+```
+
+The `sub_services` array is empty `[]` for non-package services.

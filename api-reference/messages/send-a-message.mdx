@@ -3,3 +3,92 @@ title: "Send a message"
 description: "Sends an SMS or email to a contact through your configured channel. Requires the messages.send scope."
 openapi: "POST /messages"
 ---
+
+Sends an SMS or email to a contact through your ranch's configured messaging channel. Messages can **only** be sent to existing contacts in your ranch — this prevents spam and ensures compliance.
+
+**Required scope:** `messages.send`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+<Tip>
+  Use `contact_id` rather than `to` — it's unambiguous and always resolves correctly even if a contact has multiple numbers on file.
+</Tip>
+
+## Request
+
+```bash
+POST /messages
+Authorization: Bearer mxp_live_your_token_here
+Content-Type: application/json
+```
+
+## Body fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `channel` | string | ✅ | `sms` or `email` |
+| `contact_id` | string | ✅ or `to` | ID of the contact. Must be an existing contact in your business. |
+| `to` | string | ✅ or `contact_id` | Phone (E.164) for SMS or email. **Must match an existing contact.** |
+| `message` | string | ✅ for SMS | Plain-text message body |
+| `subject` | string | — | Email subject line (email only) |
+| `html` | string | — | HTML body for email |
+| `cc` | string | — | CC address (email only) |
+| `bcc` | string | — | BCC address (email only) |
+
+<Warning>
+  **Contacts only.** Supplying a `to` value that doesn't match any contact in your business returns `400 invalid_request_error`.
+
+  **Channel must be on file.** If the contact has no phone (for SMS) or no email (for email), the request returns `422`.
+</Warning>
+
+## Example — send SMS
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/messages \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: f6a7b8c9-d0e1-2345-f012-678901234567" \
+  -d '{
+    "channel": "sms",
+    "contact_id": "usr_6f1c3d",
+    "message": "Hi Jane! Bella is ready for pickup. See you soon! 🐾"
+  }'
+```
+
+## Response `201`
+
+```json
+{
+  "object": "message",
+  "channel": "sms",
+  "to": "+15125550123",
+  "contact_id": "usr_6f1c3d",
+  "status": "sent",
+  "provider_response": {
+    "sid": "SM1234567890abcdef",
+    "status": "queued"
+  }
+}
+```
+
+## Example — send email
+
+```bash
+curl -X POST https://mex-pet-app.vercel.app/api/v1/messages \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "channel": "email",
+    "contact_id": "usr_6f1c3d",
+    "subject": "Bella is ready for pickup!",
+    "message": "Hi Jane,\n\nBella had a wonderful stay. See you soon!\nThe Ranch Team"
+  }'
+```
+
+## Error responses
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `400` | `invalid_request_error` | `to` doesn't match any contact in your business |
+| `422` | `configuration_error` | No messaging channel configured for your ranch |
+| `422` | `send_error` | Contact has no phone (SMS) or email on file |
