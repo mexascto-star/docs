@@ -409,7 +409,10 @@
         "type": "object",
         "properties": {
           "id": { "type": "string" }, "object": { "type": "string", "example": "service" },
-          "title": { "type": "string" }, "description": { "type": "string" }, "category": { "type": "string", "example": "boarding" },
+          "title": { "type": "string", "description": "The service name (same value as `name`)." },
+          "name": { "type": "string", "description": "The service name shown in the app." },
+          "parent_id": { "type": "string", "nullable": true, "description": "Set when this is a sub-service of another service." },
+          "description": { "type": "string" }, "category": { "type": "string", "example": "boarding" },
           "base_price": { "type": "number" }, "price_type": { "type": "string", "example": "nightly" },
           "price_unit": { "type": "string", "example": "per_night" }, "is_active": { "type": "boolean" },
           "is_package": { "type": "boolean" }, "created_at": { "type": "string", "format": "date-time" },
@@ -459,9 +462,12 @@
       "ServiceCreate": {
         "type": "object", "required": ["title"],
         "properties": {
-          "title": { "type": "string" }, "description": { "type": "string" }, "category": { "type": "string", "example": "boarding" },
+          "title": { "type": "string", "description": "The service name (stored as both `name` and `title`)." },
+          "description": { "type": "string" },
+          "category": { "type": "string", "example": "boarding", "description": "Lower-cased on save (boarding, grooming, daycare, training, addon, retail)." },
           "base_price": { "type": "number" }, "price_type": { "type": "string", "example": "fixed" },
-          "price_unit": { "type": "string", "example": "fixed" }, "is_active": { "type": "boolean" }, "is_package": { "type": "boolean" }
+          "price_unit": { "type": "string", "example": "fixed" }, "is_active": { "type": "boolean" }, "is_package": { "type": "boolean" },
+          "parent_id": { "type": "string", "description": "Optional — set to another service's id to create this as a sub-service." }
         }
       },
       "Payment": {

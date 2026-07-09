@@ -215,15 +215,10 @@
   "background": {
     "decoration": "grid"
   },
-  "fonts": {
-    "heading": {
-      "family": "Inter"
-    },
-    "body": {
-      "family": "Inter"
-    }
-  },
   "api": {
     "openapi": "openapi.json"
+  },
+  "metadata": {
+    "timestamp": false
   }
 }
