@@ -4,7 +4,7 @@ description: "Retrieves a single service by ID. Requires the services.read scope
 openapi: "GET /services/{id}"
 ---
 
-Retrieves a service by ID. For packages (`is_package: true`), the response includes a `sub_services` array containing all child services that make up the bundle. For sub-services, `parent_id` points to the parent package.
+Retrieves a service by ID. The response embeds a `sub_services` array — rows from the separate `sub_services` table where `service_id` matches this service's ID. For non-package services this array is empty `[]`.
 
 **Required scope:** `services.read`
 
@@ -24,18 +24,17 @@ curl https://mex-pet-app.vercel.app/api/v1/services/svc_gg7b8c \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
 
-## Response `200` — package with sub-services
+## Response `200`
 
 ```json
 {
   "id": "svc_gg7b8c",
   "object": "service",
-  "title": "Weekend Boarding Package",
-  "name": "Weekend Boarding Package",
-  "parent_id": null,
-  "description": null,
-  "category": "boarding",
-  "base_price": 149,
+  "title": "Grooming Package",
+  "name": "Grooming Package",
+  "description": "Full groom package.",
+  "category": "grooming",
+  "base_price": 75,
   "price_type": "fixed",
   "price_unit": "fixed",
   "is_active": true,
@@ -43,33 +42,35 @@ curl https://mex-pet-app.vercel.app/api/v1/services/svc_gg7b8c \
   "created_at": "2026-07-09T17:00:00.000Z",
   "sub_services": [
     {
-      "id": "svc_hh8c9d",
-      "object": "service",
-      "title": "2-Night Boarding",
-      "name": "2-Night Boarding",
-      "parent_id": "svc_gg7b8c",
-      "category": "boarding",
-      "base_price": 110,
-      "price_type": "fixed",
+      "id": "sub_aa1b2c",
+      "object": "sub_service",
+      "service_id": "svc_gg7b8c",
+      "name": "Bath & Brush",
+      "description": "Full bath, blow dry, and brush-out.",
+      "price": 39,
+      "duration_minutes": 60,
+      "sort_order": 1,
       "is_active": true,
-      "is_package": false,
+      "pricing_model": "fixed",
+      "unit_label": null,
       "created_at": "2026-07-09T17:01:00.000Z"
     },
     {
-      "id": "svc_ii9d0e",
-      "object": "service",
-      "title": "Bath & Brush",
-      "name": "Bath & Brush",
-      "parent_id": "svc_gg7b8c",
-      "category": "grooming",
-      "base_price": 39,
-      "price_type": "fixed",
+      "id": "sub_bb2c3d",
+      "object": "sub_service",
+      "service_id": "svc_gg7b8c",
+      "name": "Nail Trim",
+      "description": "Nail clipping and filing.",
+      "price": 15,
+      "duration_minutes": 15,
+      "sort_order": 2,
       "is_active": true,
-      "is_package": false,
+      "pricing_model": "fixed",
+      "unit_label": null,
       "created_at": "2026-07-09T17:02:00.000Z"
     }
   ]
 }
 ```
 
-`sub_services` is an empty array `[]` for non-package services.
+To manage sub-services individually, use the [`/sub-services`](/api-reference/sub-services/list-sub-services) endpoints.
