@@ -4,82 +4,43 @@ description: "Creates a new service in your catalog. Requires the services.write
 openapi: "POST /services"
 ---
 
-Adds a new service to your catalog. Set `is_package: true` to mark it as a bundle. Set `parent_id` to make it a sub-service of an existing package.
+Adds a new service to your catalog. Set `is_package: true` to mark it as a package. To add add-ons or line items, create them via `POST /sub-services` after creating the service.
 
 **Required scope:** `services.write`
 
 **Base URL:** `https://mex-pet-app.vercel.app/api/v1`
 
 <Note>
-  The API writes the service name to **both** the `name` and `title` columns so it displays correctly in the app. Always supply `title` — it will appear as the service name everywhere in the Mex Pet dashboard.
+  The API writes `title` to both the `name` and `title` columns so the service name shows correctly in the Mex Pet app (which reads `name`).
 </Note>
-
-## Request
-
-```bash
-POST /services
-Authorization: Bearer mxp_live_your_token_here
-Content-Type: application/json
-```
 
 ## Body fields
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `title` | string | ✅ | Service name — written to both `name` and `title` columns so it shows in the app |
+| `title` | string | ✅ | Service name — written to both `name` and `title` columns |
 | `description` | string | — | Full description |
-| `category` | string | — | `boarding`, `grooming`, `daycare`, `training`, `addon`, `retail` (saved lowercase) |
+| `category` | string | — | `boarding`, `grooming`, `daycare`, `training`, `addon`, `retail` |
 | `base_price` | number | — | Price in dollars |
 | `price_type` | string | — | `nightly`, `fixed`, `tiered` |
 | `price_unit` | string | — | `per_night`, `per_mile`, `fixed` |
 | `is_active` | boolean | — | Available for booking (default `true`) |
-| `is_package` | boolean | — | Whether this bundles sub-services |
-| `parent_id` | string | — | ID of a parent service — makes this a **sub-service** of that package |
+| `is_package` | boolean | — | Whether this is a package with sub-services |
 
-## Example — standalone service
-
-```bash
-curl -X POST https://mex-pet-app.vercel.app/api/v1/services \
-  -H "Authorization: Bearer mxp_live_your_token_here" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Standard Boarding",
-    "description": "Overnight stay in a private suite with 3 walks per day.",
-    "category": "boarding",
-    "base_price": 55,
-    "price_type": "nightly",
-    "price_unit": "per_night",
-    "is_active": true
-  }'
-```
-
-## Example — create a package then add sub-services
+## Example
 
 ```bash
-# 1. Create the package
 curl -X POST https://mex-pet-app.vercel.app/api/v1/services \
   -H "Authorization: Bearer mxp_live_your_token_here" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Weekend Boarding Package",
-    "category": "boarding",
-    "base_price": 149,
-    "price_type": "fixed",
-    "price_unit": "fixed",
-    "is_package": true
-  }'
-
-# 2. Add a sub-service using the package's id as parent_id
-curl -X POST https://mex-pet-app.vercel.app/api/v1/services \
-  -H "Authorization: Bearer mxp_live_your_token_here" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Bath & Brush",
+    "title": "Grooming Package",
     "category": "grooming",
-    "base_price": 39,
+    "base_price": 75,
     "price_type": "fixed",
     "price_unit": "fixed",
-    "parent_id": "svc_gg7b8c"
+    "is_active": true,
+    "is_package": true
   }'
 ```
 
@@ -89,12 +50,11 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/services \
 {
   "id": "svc_gg7b8c",
   "object": "service",
-  "title": "Weekend Boarding Package",
-  "name": "Weekend Boarding Package",
-  "parent_id": null,
+  "title": "Grooming Package",
+  "name": "Grooming Package",
   "description": null,
-  "category": "boarding",
-  "base_price": 149,
+  "category": "grooming",
+  "base_price": 75,
   "price_type": "fixed",
   "price_unit": "fixed",
   "is_active": true,
@@ -102,3 +62,5 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/services \
   "created_at": "2026-07-09T17:00:00.000Z"
 }
 ```
+
+After creating a package, add its items via [`POST /sub-services`](/api-reference/sub-services/create-a-sub-service) using this service's `id` as the `service_id`.

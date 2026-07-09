@@ -75,6 +75,16 @@
             ]
           },
           {
+            "group": "Sub-services",
+            "pages": [
+              "api-reference/sub-services/list-sub-services",
+              "api-reference/sub-services/create-a-sub-service",
+              "api-reference/sub-services/retrieve-a-sub-service",
+              "api-reference/sub-services/update-a-sub-service",
+              "api-reference/sub-services/delete-a-sub-service"
+            ]
+          },
+          {
             "group": "Services",
             "pages": [
               "api-reference/services/list-services",
@@ -116,32 +126,6 @@
               "api-reference/notes/create-a-note",
               "api-reference/notes/retrieve-a-note",
               "api-reference/notes/delete-a-note"
-            ]
-          },
-          {
-            "group": "Automations",
-            "pages": [
-              "api-reference/automations/list-automations",
-              "api-reference/automations/retrieve-an-automation",
-              "api-reference/automations/update-an-automation"
-            ]
-          },
-          {
-            "group": "Forms",
-            "pages": [
-              "api-reference/forms/list-forms",
-              "api-reference/forms/create-a-form",
-              "api-reference/forms/retrieve-a-form",
-              "api-reference/forms/update-a-form",
-              "api-reference/forms/delete-a-form",
-              "api-reference/forms/list-form-submissions"
-            ]
-          },
-          {
-            "group": "Conversations",
-            "pages": [
-              "api-reference/conversations/list-conversations",
-              "api-reference/conversations/list-conversation-messages"
             ]
           },
           {
