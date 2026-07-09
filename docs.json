@@ -140,7 +140,7 @@
   },
   "logo": {
     "light": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg",
-    "dark": "/logo/dark.svg",
+    "dark": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg",
     "href": "https://mex-pet-app.vercel.app"
   },
   "navbar": {
