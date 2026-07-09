@@ -35,12 +35,12 @@ Pass the token in the `Authorization` header on every request:
 <CodeGroup>
 
 ```bash cURL
-curl https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1/contacts \
+curl https://mex-pet-app.vercel.app/api/v1/contacts \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
 
 ```javascript Node.js
-const BASE = "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1";
+const BASE = "https://mex-pet-app.vercel.app/api/v1";
 
 const res = await fetch(`${BASE}/contacts`, {
   headers: {
@@ -53,7 +53,7 @@ const res = await fetch(`${BASE}/contacts`, {
 ```python Python
 import requests
 
-BASE = "https://umyxbfjlngqhcminmwgq.supabase.co/functions/v1/api-v1"
+BASE = "https://mex-pet-app.vercel.app/api/v1"
 HEADERS = {"Authorization": "Bearer mxp_live_your_token_here"}
 
 res = requests.get(f"{BASE}/contacts", headers=HEADERS)
@@ -68,6 +68,24 @@ If a token is leaked or no longer needed, open **Settings → API Keys** and **r
 ## HTTPS only
 
 All requests must be made over HTTPS. Plain HTTP requests are rejected. Never send tokens over an unencrypted channel.
+
+## Inspect your token's scopes
+
+Call the root endpoint to see exactly which scopes your token holds — useful for debugging `403` errors:
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1 \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "api",
+  "scopes": ["contacts.read", "contacts.write", "bookings.read"]
+}
+```
+
+If a required scope is missing, create a new token in **Settings → API Keys** that includes it. See [Troubleshooting](/troubleshooting) for more.
 
 ## Error responses
 

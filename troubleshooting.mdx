@@ -1,0 +1,110 @@
+---
+title: "Troubleshooting"
+description: "Common integration errors and how to fix them."
+icon: "wrench"
+---
+
+A quick reference for the most common errors developers hit when integrating with the Mex Pet API.
+
+## `403 insufficient_scope` on an endpoint
+
+**Cause:** The token doesn't hold the required scope for the endpoint you're calling.
+
+**Diagnose:** Call the root endpoint — it returns the exact scopes your token has:
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1 \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "api",
+  "scopes": ["contacts.read", "bookings.read"]
+}
+```
+
+If the required scope (e.g. `pets.write`) isn't in that list, **create a new token** in Settings → API Keys that includes it (or use the `*` scope for full access).
+
+<Warning>
+  `.write` does **not** include `.read`. If your integration both reads and writes a resource, grant both scopes — e.g. `contacts.read` and `contacts.write`.
+</Warning>
+
+## `400 contact_id does not match a contact in your business`
+
+**Cause:** The `contact_id` you passed isn't a contact (customer) in this ranch. This error applies when creating a pet, booking, note, or sending a message.
+
+**Fix:** Create the contact first, then use the returned `id`:
+
+```bash
+# Step 1 — create the contact
+curl -X POST https://mex-pet-app.vercel.app/api/v1/contacts \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "full_name": "Jane Smith", "email": "jane@example.com" }'
+
+# Step 2 — use the returned id
+curl -X POST https://mex-pet-app.vercel.app/api/v1/pets \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "contact_id": "usr_6f1c3d", "name": "Bella", "type": "dog" }'
+```
+
+This validation applies to: `POST /pets`, `POST /bookings`, `POST /notes`, `POST /messages`.
+
+## A created service shows no name in the app
+
+**Cause (historical):** The app reads the `name` column on the `services` table, but the API was only writing to `title`.
+
+**Status: Fixed.** The API now writes the value you supply in `title` to **both** the `name` and `title` columns on every create and update. If you have existing services with a blank name, update them with `PATCH /services/{id}` and re-supply the `title` — this will repopulate the `name` column.
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/services/svc_ff6a7b \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "title": "Standard Boarding" }'
+```
+
+## Changes look stale after updating the gateway
+
+**Cause:** The Supabase Edge Function is cached on the previous deploy.
+
+**Fix:** Redeploy the function(s):
+
+```bash
+# Redeploy the API gateway
+supabase functions deploy api-v1 --no-verify-jwt
+
+# If you changed the scope catalog, also redeploy token management
+supabase functions deploy manage-api-tokens --no-verify-jwt
+```
+
+Also redeploy Vercel if you changed `vercel.json` (the proxy config), and push to GitHub to trigger a Mintlify rebuild if you changed docs.
+
+## `422` when sending a message
+
+**Cause:** One of two things:
+
+- `configuration_error` — your ranch has no messaging channel configured (no Twilio for SMS, no Gmail/Mailgun for email)
+- `send_error` — the contact has no phone number on file (for SMS) or no email address (for email)
+
+**Fix for `configuration_error`:** Connect a messaging channel in the Mex Pet app settings.
+
+**Fix for `send_error`:** Update the contact first:
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/contacts/usr_6f1c3d \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{ "phone": "+15125550123" }'
+```
+
+## `401 Unauthorized`
+
+Your token is missing, invalid, revoked, or expired.
+
+- **Missing:** add `Authorization: Bearer mxp_live_...` to your request headers
+- **Revoked/expired:** go to Settings → API Keys, revoke the old token, and create a new one
+- **Invalid:** make sure you're copying the full token value — it's shown only once at creation
+
+See [Authentication](/authentication) for details.
