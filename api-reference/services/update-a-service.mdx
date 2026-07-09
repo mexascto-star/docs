@@ -4,11 +4,15 @@ description: "Updates a service in your catalog. Requires the services.write sco
 openapi: "PATCH /services/{id}"
 ---
 
-Updates one or more fields on a service. Common use cases: toggling `is_active`, adjusting pricing, or updating the description.
+Updates one or more fields on a service. Common uses: toggling `is_active`, adjusting pricing, updating the description, or linking/unlinking a `parent_id`.
 
 **Required scope:** `services.write`
 
 **Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+<Note>
+  When you update `title`, the API writes it to both the `name` and `title` columns so the name stays in sync in the app.
+</Note>
 
 ## Request
 
@@ -17,6 +21,20 @@ PATCH /services/{id}
 Authorization: Bearer mxp_live_your_token_here
 Content-Type: application/json
 ```
+
+## Updatable fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `title` | string | Service name — updates both `name` and `title` columns |
+| `description` | string | Full description |
+| `category` | string | `boarding`, `grooming`, `daycare`, `training`, `addon`, `retail` |
+| `base_price` | number | Price in dollars |
+| `price_type` | string | `nightly`, `fixed`, `tiered` |
+| `price_unit` | string | `per_night`, `per_mile`, `fixed` |
+| `is_active` | boolean | Toggle availability |
+| `is_package` | boolean | Whether this is a package |
+| `parent_id` | string | Set or clear the parent package link |
 
 ## Example — raise the price
 
@@ -43,6 +61,8 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/services/svc_ff6a7b \
   "id": "svc_ff6a7b",
   "object": "service",
   "title": "Standard Boarding",
+  "name": "Standard Boarding",
+  "parent_id": null,
   "description": "Overnight stay in a private suite with 3 walks per day.",
   "category": "boarding",
   "base_price": 60,

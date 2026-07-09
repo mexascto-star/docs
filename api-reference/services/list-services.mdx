@@ -4,7 +4,7 @@ description: "Returns your service catalog. Requires the services.read scope."
 openapi: "GET /services"
 ---
 
-Returns your priced service catalog. Use `active=true` to get only services currently available for booking.
+Returns your priced service catalog. Use `active=true` to get only services currently available for booking. Use `category` to filter by type, or `query` to search by name.
 
 **Required scope:** `services.read`
 
@@ -25,7 +25,7 @@ Authorization: Bearer mxp_live_your_token_here
 | `offset` | integer | Items to skip |
 | `active` | boolean | `true` = active services only |
 | `category` | string | `boarding`, `grooming`, `daycare`, `training`, `addon`, `retail` |
-| `query` | string | Free-text search over service title |
+| `query` | string | Free-text search over service name and title |
 
 ## Example
 
@@ -44,6 +44,8 @@ curl "https://mex-pet-app.vercel.app/api/v1/services?active=true&category=boardi
       "id": "svc_ff6a7b",
       "object": "service",
       "title": "Standard Boarding",
+      "name": "Standard Boarding",
+      "parent_id": null,
       "description": "Overnight stay in a private suite with 3 walks per day.",
       "category": "boarding",
       "base_price": 55,
