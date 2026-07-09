@@ -7,7 +7,10 @@
     "light": "#BEF264",
     "dark": "#111111"
   },
-  "favicon": "/favicon.svg",
+  "favicon": {
+    "light": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg",
+    "dark": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg"
+  },
   "navigation": {
     "pages": [
       {
@@ -136,7 +139,7 @@
     ]
   },
   "logo": {
-    "light": "/logo/light.svg",
+    "light": "/images/101b956c-6f68-4805-841b-1aa507d07f21_profile.jpg",
     "dark": "/logo/dark.svg",
     "href": "https://mex-pet-app.vercel.app"
   },
