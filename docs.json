@@ -75,16 +75,6 @@
             ]
           },
           {
-            "group": "Sub-services",
-            "pages": [
-              "api-reference/sub-services/list-sub-services",
-              "api-reference/sub-services/create-a-sub-service",
-              "api-reference/sub-services/retrieve-a-sub-service",
-              "api-reference/sub-services/update-a-sub-service",
-              "api-reference/sub-services/delete-a-sub-service"
-            ]
-          },
-          {
             "group": "Services",
             "pages": [
               "api-reference/services/list-services",
@@ -92,6 +82,16 @@
               "api-reference/services/retrieve-a-service",
               "api-reference/services/update-a-service",
               "api-reference/services/delete-a-service"
+            ]
+          },
+          {
+            "group": "Sub-services",
+            "pages": [
+              "api-reference/sub-services/list-sub-services",
+              "api-reference/sub-services/create-a-sub-service",
+              "api-reference/sub-services/retrieve-a-sub-service",
+              "api-reference/sub-services/update-a-sub-service",
+              "api-reference/sub-services/delete-a-sub-service"
             ]
           },
           {
