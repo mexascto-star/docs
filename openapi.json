@@ -342,9 +342,10 @@
         "properties": {
           "id": { "type": "string" }, "object": { "type": "string", "example": "booking" },
           "contact_id": { "type": "string" }, "service_type": { "type": "string", "nullable": true },
+          "pet_ids": { "type": "array", "items": { "type": "string" }, "description": "Pet(s) linked to this booking." },
           "sub_services": { "type": "array", "items": { "type": "object" } },
           "check_in_date": { "type": "string", "format": "date" }, "check_out_date": { "type": "string", "format": "date", "nullable": true },
-          "status": { "type": "string", "example": "pending" }, "payment_status": { "type": "string", "example": "unpaid" },
+          "status": { "type": "string", "example": "pending", "description": "Always starts as `pending`; change it later in the app." }, "payment_status": { "type": "string", "example": "unpaid" },
           "total_amount": { "type": "number", "nullable": true }, "assigned_staff_id": { "type": "string", "nullable": true },
           "has_pickup": { "type": "boolean" }, "has_dropoff": { "type": "boolean" }, "created_at": { "type": "string", "format": "date-time" },
           "contact": { "type": "object", "nullable": true, "description": "The booking's contact (included when retrieving a single booking).", "properties": { "id": { "type": "string" }, "full_name": { "type": "string" }, "email": { "type": "string" }, "phone": { "type": "string" } } }
@@ -353,10 +354,27 @@
       "BookingCreate": {
         "type": "object", "required": ["contact_id", "check_in_date"],
         "properties": {
-          "contact_id": { "type": "string" }, "service_type": { "type": "string" },
-          "sub_services": { "type": "array", "items": { "type": "object" }, "description": "List of { name, price } line items." },
+          "contact_id": { "type": "string", "description": "The contact (customer) this booking is for — must be a contact in your business." },
+          "pet_id": { "type": "string", "description": "Optional — the pet this booking is for. Must be a pet in your business; it is linked to the booking." },
+          "service_type": { "type": "string" },
+          "sub_services": {
+            "type": "array",
+            "description": "The booking's line items. Each item has: `name` (string), `price` (number), `pet_id` (uuid or null — the pet this line is for), `quantity` (number), `service_category` (string, e.g. Boarding / Transport / Grooming), and optional `address` (string, used for transport legs).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" }, "price": { "type": "number" },
+                "pet_id": { "type": "string", "nullable": true }, "quantity": { "type": "number" },
+                "service_category": { "type": "string" }, "address": { "type": "string" }
+              }
+            },
+            "example": [
+              { "name": "Dog Boarding (5 x 5)", "price": 24, "pet_id": "f19a54f6-90d2-48a4-a39f-74db540f2213", "address": "Punjab, Bahawalpur, Government Housing Society", "quantity": 1, "service_category": "Boarding" },
+              { "name": "Pick Up", "price": 50, "pet_id": null, "quantity": 1, "service_category": "Transport" }
+            ]
+          },
           "check_in_date": { "type": "string", "format": "date" }, "check_out_date": { "type": "string", "format": "date" },
-          "total_amount": { "type": "number" }, "status": { "type": "string" }, "payment_status": { "type": "string" },
+          "total_amount": { "type": "number" }, "payment_status": { "type": "string" },
           "has_pickup": { "type": "boolean" }, "has_dropoff": { "type": "boolean" }
         }
       },
