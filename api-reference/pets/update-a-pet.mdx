@@ -32,9 +32,23 @@ Content-Type: application/json
 | `health_notes` | string | Free-text health notes |
 | `is_vaccinated` | boolean | Vaccination status |
 | `status` | string | `active` or `inactive` |
-| `custom_fields` | object | Map of custom values keyed by `field_key`. **Merged** into the existing values — keys you don't send are preserved. Unknown keys are ignored; `checkbox` values are coerced to booleans. See [Custom fields](/custom-fields). |
+| `custom_fields` | object | Business-defined custom values as a JSON object where **each key is a `field_key`** and the value is what you want to store. **Merged** into the existing values — keys you don't send are preserved. Unknown keys are ignored; `checkbox` values are coerced to booleans. See [Custom fields](/custom-fields). |
+
+### `custom_fields` shape
+
+Send only the keys you want to change — anything already stored under a key you omit is kept.
+
+```json
+"custom_fields": {
+  "microchip_number": "985112000123456", // text
+  "is_service_animal": true,             // checkbox → boolean
+  "daily_meals": 3                       // number
+}
+```
 
 ## Example
+
+Update weight, health notes, **and** two custom-field values in one call:
 
 ```bash
 curl -X PATCH https://mex-pet-app.vercel.app/api/v1/pets/pet_aa1b2c \
@@ -42,7 +56,11 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/pets/pet_aa1b2c \
   -H "Content-Type: application/json" \
   -d '{
     "weight": "68 lbs",
-    "health_notes": "Checkup completed July 2026 — all clear"
+    "health_notes": "Checkup completed July 2026 — all clear",
+    "custom_fields": {
+      "daily_meals": 3,
+      "is_service_animal": false
+    }
   }'
 ```
 
@@ -64,6 +82,11 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/pets/pet_aa1b2c \
   "is_vaccinated": true,
   "status": "active",
   "image_url": null,
+  "custom_fields": {
+    "microchip_number": "985112000123456",
+    "is_service_animal": false,
+    "daily_meals": 3
+  },
   "created_at": "2026-02-01T09:00:00.000Z"
 }
 ```

@@ -32,7 +32,7 @@ Content-Type: application/json
 | `membership_tier` | string | e.g. `bronze`, `silver`, `gold` |
 | `tags` | string\[\] | **Replaces** the entire tag list |
 | `avatar_url` | string | URL to profile photo |
-| `custom_fields` | object | Map of custom values keyed by `field_key`. **Merged** into the existing values — keys you don't send are preserved. Unknown keys are ignored; `checkbox` values are coerced to booleans. See [Custom fields](/custom-fields). |
+| `custom_fields` | object | Business-defined custom values as a JSON object where **each key is a `field_key`** and the value is what you want to store. **Merged** into the existing values — keys you don't send are preserved. Unknown keys are ignored; `checkbox` values are coerced to booleans. See [Custom fields](/custom-fields). |
 
 <Warning>
   `tags` is a **replace** operation. The array you send becomes the contact's complete tag list. To add one tag without removing others, read the current `tags` first and include them all in your PATCH.
@@ -42,7 +42,21 @@ Content-Type: application/json
   `email`, user role, and business assignment cannot be changed via the API.
 </Note>
 
+### `custom_fields` shape
+
+Send only the keys you want to change — anything already stored under a key you omit is kept.
+
+```json
+"custom_fields": {
+  "favorite_toy": "Squeaky duck",   // text
+  "vip": true,                      // checkbox → boolean
+  "lifetime_visits": 13             // number
+}
+```
+
 ## Example
+
+Update the membership tier, tags, **and** two custom-field values in one call:
 
 ```bash
 curl -X PATCH https://mex-pet-app.vercel.app/api/v1/contacts/usr_9a2b4c \
@@ -50,7 +64,11 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/contacts/usr_9a2b4c \
   -H "Content-Type: application/json" \
   -d '{
     "membership_tier": "silver",
-    "tags": ["new-client", "referral"]
+    "tags": ["new-client", "referral"],
+    "custom_fields": {
+      "favorite_toy": "Squeaky duck",
+      "vip": true
+    }
   }'
 ```
 
@@ -69,6 +87,11 @@ curl -X PATCH https://mex-pet-app.vercel.app/api/v1/contacts/usr_9a2b4c \
   "tags": ["new-client", "referral"],
   "loyalty_points": 0,
   "avatar_url": null,
+  "custom_fields": {
+    "favorite_toy": "Squeaky duck",
+    "vip": true,
+    "referral_source": "Instagram"
+  },
   "created_at": "2026-07-09T14:22:00.000Z"
 }
 ```

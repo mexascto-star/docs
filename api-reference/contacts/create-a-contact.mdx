@@ -36,7 +36,21 @@ Content-Type: application/json
 | `country` | string | — | Country |
 | `membership_tier` | string | — | e.g. `bronze`, `silver`, `gold` |
 | `tags` | string\[\] | — | Tags to apply immediately |
-| `custom_fields` | object | — | Map of business-defined custom values keyed by `field_key`. See [Custom fields](/custom-fields). Unknown keys are ignored; `checkbox` values are coerced to booleans. |
+| `custom_fields` | object | — | Business-defined custom values. Send as a JSON object where **each key is a `field_key`** from your business's custom-field registry and **the value is the value for that field** (see shape below). Unknown keys are ignored; `checkbox` values are coerced to booleans. Discover your available keys with [`GET /custom-fields?entity_type=customer`](/api-reference/custom-fields/list-custom-fields). |
+
+### `custom_fields` shape
+
+The `custom_fields` value is a plain JSON object of **key → value** pairs. The key is the `field_key` of a definition in your registry; the value is what you want to store.
+
+```json
+"custom_fields": {
+  "favorite_toy": "Rope",       // text
+  "vip": true,                  // checkbox → boolean
+  "referral_source": "Instagram", // dropdown
+  "lifetime_visits": 12,        // number
+  "birthday": "2020-05-14"      // date (YYYY-MM-DD)
+}
+```
 
 ## Example
 
@@ -52,7 +66,12 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/contacts \
     "city": "Austin",
     "state": "TX",
     "membership_tier": "bronze",
-    "tags": ["new-client"]
+    "tags": ["new-client"],
+    "custom_fields": {
+      "favorite_toy": "Rope",
+      "vip": true,
+      "referral_source": "Instagram"
+    }
   }'
 ```
 
@@ -74,6 +93,11 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/contacts \
   "tags": ["new-client"],
   "loyalty_points": 0,
   "avatar_url": null,
+  "custom_fields": {
+    "favorite_toy": "Rope",
+    "vip": true,
+    "referral_source": "Instagram"
+  },
   "created_at": "2026-07-09T14:22:00.000Z"
 }
 ```

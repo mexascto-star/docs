@@ -33,11 +33,25 @@ Content-Type: application/json
 | `health_notes` | string | — | Free-text health information |
 | `is_vaccinated` | boolean | — | Whether vaccinations are current |
 | `status` | string | — | `active` (default) or `inactive` |
-| `custom_fields` | object | — | Map of business-defined custom values keyed by `field_key`. See [Custom fields](/custom-fields). Unknown keys are ignored; `checkbox` values are coerced to booleans. |
+| `custom_fields` | object | — | Business-defined custom values. Send as a JSON object where **each key is a `field_key`** from your pet custom-field registry and **the value is the value for that field** (see shape below). Unknown keys are ignored; `checkbox` values are coerced to booleans. Discover your available keys with [`GET /custom-fields?entity_type=pet`](/api-reference/custom-fields/list-custom-fields). |
 
 <Warning>
   `contact_id` must be an existing contact in your business. An unknown ID returns `400`: _"contact\_id does not match a contact in your business."_
 </Warning>
+
+### `custom_fields` shape
+
+`custom_fields` is a plain JSON object of **key → value** pairs. The key is the `field_key` of a pet custom-field definition; the value is what you want to store.
+
+```json
+"custom_fields": {
+  "microchip_number": "985112000123456", // text
+  "is_service_animal": true,             // checkbox → boolean
+  "food_brand": "Blue Buffalo",          // dropdown
+  "daily_meals": 2,                      // number
+  "adopted_on": "2023-04-01"             // date (YYYY-MM-DD)
+}
+```
 
 ## Example
 
@@ -54,7 +68,12 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/pets \
     "age": "2",
     "weight": "55 lbs",
     "gender": "male",
-    "is_vaccinated": true
+    "is_vaccinated": true,
+    "custom_fields": {
+      "microchip_number": "985112000123456",
+      "is_service_animal": false,
+      "food_brand": "Blue Buffalo"
+    }
   }'
 ```
 
@@ -76,6 +95,11 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/pets \
   "is_vaccinated": true,
   "status": "active",
   "image_url": null,
+  "custom_fields": {
+    "microchip_number": "985112000123456",
+    "is_service_animal": false,
+    "food_brand": "Blue Buffalo"
+  },
   "created_at": "2026-07-09T15:00:00.000Z"
 }
 ```
