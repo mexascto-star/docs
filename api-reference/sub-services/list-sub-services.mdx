@@ -3,6 +3,52 @@ title: "List sub-services"
 description: "Returns sub-services for a parent service. Requires the services.read scope."
 ---
 
-Returns sub-services (add-ons and line items) from the `sub_services` table. Filter with `service_id` to get sub-services for a specific parent service. Sub-services are also embedded in `GET /services/{id}` responses.
+Returns sub-services (add-ons and line items) from the `sub_services` table. Always filter by `service_id` to get the sub-services for a specific parent. Sub-services are also embedded in `GET /services/{id}` responses.
 
 **Required scope:** `services.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Query parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `limit` | integer | Page size (1–100, default `20`) |
+| `offset` | integer | Number of items to skip |
+| `service_id` | string | Filter to sub-services of this parent service |
+| `active` | boolean | `true` = active sub-services only |
+
+## Example
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/sub-services?service_id=svc_gg7b8c" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "sub_aa1b2c",
+      "object": "sub_service",
+      "service_id": "svc_gg7b8c",
+      "name": "Bath & Brush",
+      "description": "Full bath, blow dry, and brush-out.",
+      "price": 39,
+      "duration_minutes": 60,
+      "sort_order": 1,
+      "is_active": true,
+      "pricing_model": "fixed",
+      "unit_label": null,
+      "created_at": "2026-07-09T10:00:00.000Z"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "total": 1,
+  "has_more": false
+}
+```

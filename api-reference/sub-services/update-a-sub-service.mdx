@@ -6,3 +6,49 @@ description: "Updates fields on a sub-service. Unset fields are left unchanged. 
 Updates one or more fields on an existing sub-service (PATCH semantics). The parent `service_id` cannot be changed after creation.
 
 **Required scope:** `services.write`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Updatable fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Sub-service name |
+| `description` | string | Full description |
+| `price` | number | Price in dollars |
+| `duration_minutes` | integer | Estimated duration |
+| `sort_order` | integer | Display order |
+| `is_active` | boolean | Availability toggle |
+| `pricing_model` | string | e.g. `fixed` |
+| `unit_label` | string | Unit label |
+
+## Example
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/sub-services/sub_aa1b2c \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "price": 45,
+    "is_active": false
+  }'
+```
+
+## Response `200`
+
+```json
+{
+  "id": "sub_aa1b2c",
+  "object": "sub_service",
+  "service_id": "svc_gg7b8c",
+  "name": "Bath & Brush",
+  "description": "Full bath, blow dry, and brush-out.",
+  "price": 45,
+  "duration_minutes": 60,
+  "sort_order": 1,
+  "is_active": false,
+  "pricing_model": "fixed",
+  "unit_label": null,
+  "created_at": "2026-07-09T10:00:00.000Z"
+}
+```

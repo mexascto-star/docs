@@ -3,6 +3,40 @@ title: "Retrieve a sub-service"
 description: "Retrieves a single sub-service by ID. Requires the services.read scope."
 ---
 
-Retrieves a single sub-service by ID. Returns `404` if the sub-service does not belong to your business.
+Retrieves a single sub-service by ID.
 
 **Required scope:** `services.read`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Example
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/sub-services/sub_aa1b2c \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "id": "sub_aa1b2c",
+  "object": "sub_service",
+  "service_id": "svc_gg7b8c",
+  "name": "Bath & Brush",
+  "description": "Full bath, blow dry, and brush-out.",
+  "price": 39,
+  "duration_minutes": 60,
+  "sort_order": 1,
+  "is_active": true,
+  "pricing_model": "fixed",
+  "unit_label": null,
+  "created_at": "2026-07-09T10:00:00.000Z"
+}
+```
+
+## Error responses
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `404` | `not_found` | Sub-service does not exist in your business |
