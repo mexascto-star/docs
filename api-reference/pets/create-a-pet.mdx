@@ -33,6 +33,7 @@ Content-Type: application/json
 | `health_notes` | string | — | Free-text health information |
 | `is_vaccinated` | boolean | — | Whether vaccinations are current |
 | `status` | string | — | `active` (default) or `inactive` |
+| `custom_fields` | object | — | Map of business-defined custom values keyed by `field_key`. See [Custom fields](/custom-fields). Unknown keys are ignored; `checkbox` values are coerced to booleans. |
 
 <Warning>
   `contact_id` must be an existing contact in your business. An unknown ID returns `400`: _"contact\_id does not match a contact in your business."_

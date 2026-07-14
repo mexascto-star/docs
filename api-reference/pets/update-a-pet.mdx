@@ -32,6 +32,7 @@ Content-Type: application/json
 | `health_notes` | string | Free-text health notes |
 | `is_vaccinated` | boolean | Vaccination status |
 | `status` | string | `active` or `inactive` |
+| `custom_fields` | object | Map of custom values keyed by `field_key`. **Merged** into the existing values — keys you don't send are preserved. Unknown keys are ignored; `checkbox` values are coerced to booleans. See [Custom fields](/custom-fields). |
 
 ## Example
 

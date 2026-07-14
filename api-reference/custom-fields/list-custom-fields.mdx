@@ -1,0 +1,58 @@
+---
+title: "List custom-field definitions"
+description: "Returns the active custom-field definitions for the token's business. Requires the contacts.read scope (for entity_type=customer) or the pets.read scope (for entity_type=pet)."
+openapi: "GET /custom-fields"
+---
+
+Use this endpoint to discover which custom fields your ranch has configured — the returned `field_key`s are exactly the keys you send in the `custom_fields` object on a contact or pet.
+
+**Required scope:** `contacts.read` for `entity_type=customer`, `pets.read` for `entity_type=pet`
+
+**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
+
+## Query parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `entity_type` | string | ✅ | `customer` or `pet` |
+
+## Example — list customer custom fields
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/custom-fields?entity_type=customer" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+## Response `200`
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "cfd_9a2b4c",
+      "object": "custom_field_definition",
+      "entity_type": "customer",
+      "name": "Favorite toy",
+      "field_key": "favorite_toy",
+      "field_type": "text",
+      "options": null,
+      "is_required": false
+    },
+    {
+      "id": "cfd_1d3e5f",
+      "object": "custom_field_definition",
+      "entity_type": "customer",
+      "name": "VIP",
+      "field_key": "vip",
+      "field_type": "checkbox",
+      "options": null,
+      "is_required": false
+    }
+  ]
+}
+```
+
+<Tip>
+  Send the returned `field_key` values as keys inside `custom_fields` when creating or updating a contact or pet. See the [Custom fields](/custom-fields) concept page for the end-to-end flow.
+</Tip>

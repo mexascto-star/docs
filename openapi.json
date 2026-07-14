@@ -21,8 +21,8 @@
     { "name": "Staff", "description": "Your team members (workers, drivers, receptionists)." },
     { "name": "Tags", "description": "The tag catalog for segmenting contacts." },
     { "name": "Notes", "description": "Free-text notes attached to contacts." },
-    { "name": "Forms", "description": "Forms and surveys." },
-    { "name": "Messages", "description": "Send SMS and email to your contacts." }
+    { "name": "Messages", "description": "Send SMS and email to your contacts." },
+    { "name": "Custom fields", "description": "Discover the custom-field definitions configured for your business (customer and pet)." }
   ],
   "paths": {
     "/contacts": {
@@ -97,7 +97,7 @@
     "/pets/{id}": {
       "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
       "get": { "tags": ["Pets"], "summary": "Retrieve a pet", "operationId": "getPet", "description": "Requires the `pets.read` scope.", "responses": { "200": { "description": "The pet.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
-      "patch": { "tags": ["Pets"], "summary": "Update a pet", "operationId": "updatePet", "description": "Requires the `pets.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PetCreate" } } } }, "responses": { "200": { "description": "The updated pet.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Pets"], "summary": "Update a pet", "operationId": "updatePet", "description": "Requires the `pets.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PetUpdate" } } } }, "responses": { "200": { "description": "The updated pet.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
       "delete": { "tags": ["Pets"], "summary": "Delete a pet", "operationId": "deletePet", "description": "Requires the `pets.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
     },
     "/bookings": {
@@ -137,7 +137,7 @@
     "/services/{id}": {
       "parameters": [ { "$ref": "#/components/parameters/pathId" } ],
       "get": { "tags": ["Services"], "summary": "Retrieve a service", "operationId": "getService", "description": "Requires the `services.read` scope.", "responses": { "200": { "description": "The service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Service" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
-      "patch": { "tags": ["Services"], "summary": "Update a service", "operationId": "updateService", "description": "Requires the `services.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceCreate" } } } }, "responses": { "200": { "description": "The updated service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Service" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
+      "patch": { "tags": ["Services"], "summary": "Update a service", "operationId": "updateService", "description": "Requires the `services.write` scope.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceUpdate" } } } }, "responses": { "200": { "description": "The updated service.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Service" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
       "delete": { "tags": ["Services"], "summary": "Delete a service", "operationId": "deleteService", "description": "Requires the `services.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
     },
     "/sub-services": {
@@ -224,6 +224,21 @@
       "get": { "tags": ["Notes"], "summary": "Retrieve a note", "operationId": "getNote", "description": "Requires the `notes.read` scope.", "responses": { "200": { "description": "The note.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } },
       "delete": { "tags": ["Notes"], "summary": "Delete a note", "operationId": "deleteNote", "description": "Requires the `notes.write` scope.", "responses": { "200": { "description": "Deletion confirmation.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Deleted" } } } }, "404": { "$ref": "#/components/responses/NotFound" } } }
     },
+    "/custom-fields": {
+      "get": {
+        "tags": ["Custom fields"], "summary": "List custom-field definitions", "operationId": "listCustomFields",
+        "description": "Returns the active custom-field definitions for the token's business. Use this to discover which `field_key`s can be sent in the `custom_fields` object on contacts and pets. Requires the `contacts.read` scope (for `entity_type=customer`) or the `pets.read` scope (for `entity_type=pet`).",
+        "parameters": [
+          { "name": "entity_type", "in": "query", "required": true, "schema": { "type": "string", "enum": ["customer", "pet"] }, "description": "Which entity's definitions to return." }
+        ],
+        "responses": {
+          "200": { "description": "The custom-field definitions for that entity type.", "content": { "application/json": { "schema": { "type": "object", "properties": { "object": { "type": "string", "example": "list" }, "data": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldDefinition" } } } } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
     "/messages": {
       "post": {
         "tags": ["Messages"], "summary": "Send a message", "operationId": "sendMessage",
@@ -294,7 +309,8 @@
           "loyalty_points": { "type": "integer" },
           "avatar_url": { "type": "string", "nullable": true },
           "created_at": { "type": "string", "format": "date-time" },
-          "pets": { "type": "array", "description": "The contact's pets (included when retrieving a single contact).", "items": { "$ref": "#/components/schemas/Pet" } }
+          "pets": { "type": "array", "description": "The contact's pets (included when retrieving a single contact).", "items": { "$ref": "#/components/schemas/Pet" } },
+          "custom_fields": { "type": "object", "additionalProperties": true, "description": "Business-defined custom values keyed by field_key (see the Custom fields concept page). Discover available keys with `GET /custom-fields?entity_type=customer`.", "example": { "favorite_toy": "Ball", "vip": true } }
         }
       },
       "ContactCreate": {
@@ -303,7 +319,8 @@
           "full_name": { "type": "string" }, "email": { "type": "string", "format": "email" },
           "phone": { "type": "string" }, "address": { "type": "string" }, "city": { "type": "string" },
           "state": { "type": "string" }, "zip_code": { "type": "string" }, "country": { "type": "string" },
-          "membership_tier": { "type": "string" }, "tags": { "type": "array", "items": { "type": "string" } }
+          "membership_tier": { "type": "string" }, "tags": { "type": "array", "items": { "type": "string" } },
+          "custom_fields": { "type": "object", "additionalProperties": true, "description": "Optional map of business-defined custom values keyed by field_key. Unknown keys are ignored. Checkbox fields are coerced to boolean.", "example": { "favorite_toy": "Ball" } }
         }
       },
       "ContactUpdate": {
@@ -312,7 +329,8 @@
           "full_name": { "type": "string" }, "phone": { "type": "string" }, "address": { "type": "string" },
           "city": { "type": "string" }, "state": { "type": "string" }, "zip_code": { "type": "string" },
           "country": { "type": "string" }, "membership_tier": { "type": "string" },
-          "tags": { "type": "array", "items": { "type": "string" } }, "avatar_url": { "type": "string" }
+          "tags": { "type": "array", "items": { "type": "string" } }, "avatar_url": { "type": "string" },
+          "custom_fields": { "type": "object", "additionalProperties": true, "description": "Optional map of business-defined custom values keyed by field_key. Merged into the contact's existing custom values (existing keys are preserved unless overwritten). Unknown keys are ignored. Checkbox fields are coerced to boolean.", "example": { "favorite_toy": "Ball" } }
         }
       },
       "Pet": {
@@ -325,16 +343,30 @@
           "allergies": { "type": "string", "nullable": true }, "health_notes": { "type": "string", "nullable": true },
           "is_vaccinated": { "type": "boolean", "nullable": true }, "status": { "type": "string", "example": "active" },
           "image_url": { "type": "string", "nullable": true }, "created_at": { "type": "string", "format": "date-time" },
-          "contact": { "type": "object", "nullable": true, "description": "The owning contact (included when retrieving a single pet).", "properties": { "id": { "type": "string" }, "full_name": { "type": "string" }, "email": { "type": "string" }, "phone": { "type": "string" } } }
+          "contact": { "type": "object", "nullable": true, "description": "The owning contact (included when retrieving a single pet).", "properties": { "id": { "type": "string" }, "full_name": { "type": "string" }, "email": { "type": "string" }, "phone": { "type": "string" } } },
+          "custom_fields": { "type": "object", "additionalProperties": true, "description": "Business-defined custom values keyed by field_key (see the Custom fields concept page). Discover available keys with `GET /custom-fields?entity_type=pet`.", "example": { "favorite_toy": "Squeaky ball", "vaccinated_at_home": true } }
         }
       },
       "PetCreate": {
         "type": "object", "required": ["name", "contact_id"],
         "properties": {
-          "contact_id": { "type": "string" }, "name": { "type": "string" }, "type": { "type": "string" },
+          "contact_id": { "type": "string", "description": "The owning contact's id. Must be a contact in your business — a pet cannot exist without a valid owner." },
+          "name": { "type": "string" }, "type": { "type": "string" },
           "breed": { "type": "string" }, "age": { "type": "string" }, "weight": { "type": "string" },
           "gender": { "type": "string" }, "allergies": { "type": "string" }, "health_notes": { "type": "string" },
-          "is_vaccinated": { "type": "boolean" }, "status": { "type": "string" }
+          "is_vaccinated": { "type": "boolean" }, "status": { "type": "string" },
+          "custom_fields": { "type": "object", "additionalProperties": true, "description": "Optional map of business-defined custom values keyed by field_key. Unknown keys are ignored. Checkbox fields are coerced to boolean.", "example": { "favorite_toy": "Squeaky ball" } }
+        }
+      },
+      "PetUpdate": {
+        "type": "object",
+        "description": "All fields optional. Owner (`contact_id`) cannot be changed via API.",
+        "properties": {
+          "name": { "type": "string" }, "type": { "type": "string" }, "breed": { "type": "string" },
+          "age": { "type": "string" }, "weight": { "type": "string" }, "gender": { "type": "string" },
+          "allergies": { "type": "string" }, "health_notes": { "type": "string" },
+          "is_vaccinated": { "type": "boolean" }, "status": { "type": "string" },
+          "custom_fields": { "type": "object", "additionalProperties": true, "description": "Optional map of business-defined custom values keyed by field_key. Merged into the pet's existing custom values (existing keys are preserved unless overwritten). Unknown keys are ignored. Checkbox fields are coerced to boolean.", "example": { "favorite_toy": "Squeaky ball" } }
         }
       },
       "Booking": {
@@ -432,6 +464,16 @@
           "price_unit": { "type": "string", "example": "fixed" }, "is_active": { "type": "boolean" }, "is_package": { "type": "boolean" }
         }
       },
+      "ServiceUpdate": {
+        "type": "object",
+        "description": "All fields optional. The `title` value is written to both `name` and `title` columns.",
+        "properties": {
+          "title": { "type": "string" }, "description": { "type": "string" },
+          "category": { "type": "string", "description": "Lower-cased on save." },
+          "base_price": { "type": "number" }, "price_type": { "type": "string" }, "price_unit": { "type": "string" },
+          "is_active": { "type": "boolean" }, "is_package": { "type": "boolean" }
+        }
+      },
       "SubService": {
         "type": "object",
         "properties": {
@@ -513,6 +555,20 @@
       "NoteCreate": {
         "type": "object", "required": ["contact_id", "body"],
         "properties": { "contact_id": { "type": "string" }, "body": { "type": "string" } }
+      },
+      "CustomFieldDefinition": {
+        "type": "object",
+        "description": "One custom-field definition configured for the business. The `field_key` is the stable slug used as a key in every entity's `custom_fields` object.",
+        "properties": {
+          "id": { "type": "string" },
+          "object": { "type": "string", "example": "custom_field_definition" },
+          "entity_type": { "type": "string", "enum": ["customer", "pet"] },
+          "name": { "type": "string", "description": "Human-readable label.", "example": "Favorite toy" },
+          "field_key": { "type": "string", "description": "Stable slug — the key used inside `custom_fields`.", "example": "favorite_toy" },
+          "field_type": { "type": "string", "enum": ["text", "textarea", "number", "date", "dropdown", "multiselect", "checkbox", "phone", "email", "url"] },
+          "options": { "type": "array", "nullable": true, "description": "Present for `dropdown` and `multiselect` types.", "items": { "type": "string" } },
+          "is_required": { "type": "boolean" }
+        }
       }
     }
   }

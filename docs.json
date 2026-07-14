@@ -37,7 +37,8 @@
           "pagination",
           "errors",
           "rate-limits",
-          "idempotency"
+          "idempotency",
+          "custom-fields"
         ]
       },
       {
@@ -132,6 +133,13 @@
             "group": "Messages",
             "pages": [
               "api-reference/messages/send-a-message"
+            ]
+          },
+          {
+            "group": "Custom fields",
+            "icon": "sliders",
+            "pages": [
+              "api-reference/custom-fields/list-custom-fields"
             ]
           }
         ]

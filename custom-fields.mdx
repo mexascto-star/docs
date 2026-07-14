@@ -1,0 +1,120 @@
+---
+title: "Custom fields"
+description: "Read and write business-defined custom fields on contacts and pets."
+icon: "sliders"
+sidebarTitle: "Custom fields"
+---
+
+Mex Pet supports GHL-style **custom fields** on two entity types: **customers** (contacts) and **pets**. Each ranch defines its own fields; values are stored as a flat JSON object keyed by a stable slug called `field_key`.
+
+## How it works
+
+- **Definitions** live in a per-business registry (name, `field_key`, type, options, required, active).
+- **Values** live on the entity row itself in a `custom_fields` JSON object — `user_profiles.custom_fields` for contacts, `pets.custom_fields` for pets. No joins needed to read.
+- **Field types:** `text`, `textarea`, `number`, `date`, `dropdown`, `multiselect`, `checkbox`, `phone`, `email`, `url`.
+- **Unknown keys are ignored** on write, to keep data clean. `checkbox` values are coerced to booleans.
+
+## 1. Discover the keys
+
+List the definitions configured for your business. This tells you which `field_key`s are valid.
+
+```bash
+curl "https://mex-pet-app.vercel.app/api/v1/custom-fields?entity_type=customer" \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    { "object": "custom_field_definition", "entity_type": "customer", "name": "Favorite toy", "field_key": "favorite_toy", "field_type": "text", "options": null, "is_required": false },
+    { "object": "custom_field_definition", "entity_type": "customer", "name": "VIP",           "field_key": "vip",           "field_type": "checkbox", "options": null, "is_required": false }
+  ]
+}
+```
+
+Requires the `contacts.read` scope (for `entity_type=customer`) or the `pets.read` scope (for `entity_type=pet`).
+
+## 2. Read custom values on a contact
+
+Custom values are embedded in every contact response under `custom_fields`.
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/contacts/usr_6f1c3d \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "id": "usr_6f1c3d",
+  "object": "contact",
+  "full_name": "Jane Doe",
+  "email": "jane@example.com",
+  "custom_fields": {
+    "favorite_toy": "Rope",
+    "vip": true
+  },
+  "pets": []
+}
+```
+
+## 3. Update custom values on a contact
+
+Send the fields you want to change under `custom_fields`. The object is **merged** into the existing values — keys you don't send are left alone.
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/contacts/usr_6f1c3d \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "custom_fields": {
+      "favorite_toy": "Squeaky duck",
+      "vip": true
+    }
+  }'
+```
+
+Requires the `contacts.write` scope.
+
+## 4. Read and update custom values on a pet
+
+Same shape, different scope.
+
+```bash
+curl https://mex-pet-app.vercel.app/api/v1/pets/pet_2b4d6e \
+  -H "Authorization: Bearer mxp_live_your_token_here"
+```
+
+```json
+{
+  "id": "pet_2b4d6e",
+  "object": "pet",
+  "name": "Bella",
+  "custom_fields": {
+    "favorite_toy": "Tennis ball",
+    "vaccinated_at_home": true
+  }
+}
+```
+
+```bash
+curl -X PATCH https://mex-pet-app.vercel.app/api/v1/pets/pet_2b4d6e \
+  -H "Authorization: Bearer mxp_live_your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "custom_fields": {
+      "favorite_toy": "Kong"
+    }
+  }'
+```
+
+Requires the `pets.write` scope. Unmentioned keys (e.g. `vaccinated_at_home` above) are preserved.
+
+## Rules and limits
+
+<Warning>
+  - Only keys that match a defined `field_key` for the entity's type are stored — anything else is silently dropped.
+  - `checkbox` field values are coerced to booleans (`true`/`false`).
+  - Custom values are always scoped to your business — tokens can never read or write another ranch's custom fields.
+  - There is no dedicated `custom_fields.write` scope; write access follows the entity: `contacts.write` for customers, `pets.write` for pets.
+</Warning>

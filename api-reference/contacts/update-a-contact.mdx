@@ -32,6 +32,7 @@ Content-Type: application/json
 | `membership_tier` | string | e.g. `bronze`, `silver`, `gold` |
 | `tags` | string\[\] | **Replaces** the entire tag list |
 | `avatar_url` | string | URL to profile photo |
+| `custom_fields` | object | Map of custom values keyed by `field_key`. **Merged** into the existing values — keys you don't send are preserved. Unknown keys are ignored; `checkbox` values are coerced to booleans. See [Custom fields](/custom-fields). |
 
 <Warning>
   `tags` is a **replace** operation. The array you send becomes the contact's complete tag list. To add one tag without removing others, read the current `tags` first and include them all in your PATCH.
