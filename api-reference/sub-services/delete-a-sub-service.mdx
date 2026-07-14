@@ -3,38 +3,6 @@ title: "Delete a sub-service"
 description: "Permanently deletes a sub-service. Requires the services.write scope."
 ---
 
-Permanently removes a sub-service. Consider setting `is_active: false` instead to hide it without losing history.
+Permanently removes a sub-service. Consider setting `is_active: false` instead if you want to hide it without losing history.
 
 **Required scope:** `services.write`
-
-**Base URL:** `https://mex-pet-app.vercel.app/api/v1`
-
-## Request
-
-```bash
-DELETE /sub-services/{id}
-Authorization: Bearer mxp_live_your_token_here
-```
-
-## Example
-
-```bash
-curl -X DELETE https://mex-pet-app.vercel.app/api/v1/sub-services/sub_bb2c3d \
-  -H "Authorization: Bearer mxp_live_your_token_here"
-```
-
-## Response `200`
-
-```json
-{
-  "id": "sub_bb2c3d",
-  "object": "sub_service",
-  "deleted": true
-}
-```
-
-## Error responses
-
-| Status | Code | Meaning |
-| --- | --- | --- |
-| `404` | `not_found` | Sub-service does not exist in your business |
