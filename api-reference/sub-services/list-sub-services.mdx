@@ -3,7 +3,9 @@ title: "List sub-services"
 description: "Returns sub-services for a parent service. Requires the services.read scope."
 ---
 
-Returns sub-services (add-ons and line items) from the `sub_services` table. Always filter by `service_id` to get the sub-services for a specific parent. Sub-services are also embedded in `GET /services/{id}` responses.
+A **service** is the category a customer books — Boarding, Grooming, Transport. A **sub-service** is the priced item underneath it — "Dog Boarding (5 x 5)", "Bath And Groom", "Pick Up", "Drop Off".
+
+This is where the money lives. `/services` tells you what the ranch offers; `/sub-services` tells you what each option costs.
 
 **Required scope:** `services.read`
 
@@ -13,15 +15,17 @@ Returns sub-services (add-ons and line items) from the `sub_services` table. Alw
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `limit` | integer | Page size (1–100, default `20`) |
-| `offset` | integer | Number of items to skip |
-| `service_id` | string | Filter to sub-services of this parent service |
+| `limit` | integer | Items to return, 1–100 (default 20) |
+| `offset` | integer | Items to skip |
+| `service_id` | string | Only sub-services belonging to this service |
 | `active` | boolean | `true` = active sub-services only |
+
+Results are ordered by `sort_order`, so they arrive in the order the ranch arranged them.
 
 ## Example
 
 ```bash
-curl "https://mex-pet-app.vercel.app/api/v1/sub-services?service_id=svc_gg7b8c" \
+curl "https://mex-pet-app.vercel.app/api/v1/sub-services?service_id=svc_ff6a7b&active=true" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
 
@@ -32,18 +36,18 @@ curl "https://mex-pet-app.vercel.app/api/v1/sub-services?service_id=svc_gg7b8c" 
   "object": "list",
   "data": [
     {
-      "id": "sub_aa1b2c",
+      "id": "sub_4c0fcd",
       "object": "sub_service",
-      "service_id": "svc_gg7b8c",
-      "name": "Bath & Brush",
-      "description": "Full bath, blow dry, and brush-out.",
-      "price": 39,
-      "duration_minutes": 60,
-      "sort_order": 1,
+      "service_id": "svc_ff6a7b",
+      "name": "Dog Boarding (5 x 5)",
+      "description": "Overnight stay in a 5x5 suite.",
+      "price": 24,
+      "duration_minutes": null,
+      "sort_order": 0,
       "is_active": true,
       "pricing_model": "fixed",
       "unit_label": null,
-      "created_at": "2026-07-09T10:00:00.000Z"
+      "created_at": "2026-01-01T00:00:00.000Z"
     }
   ],
   "limit": 20,
@@ -52,3 +56,7 @@ curl "https://mex-pet-app.vercel.app/api/v1/sub-services?service_id=svc_gg7b8c" 
   "has_more": false
 }
 ```
+
+<Note>
+  `pricing_model` is `fixed` for a flat charge, or `per_unit` when the price multiplies by a quantity. For `per_unit`, `unit_label` names the unit — a per-mile transport fee, for example.
+</Note>

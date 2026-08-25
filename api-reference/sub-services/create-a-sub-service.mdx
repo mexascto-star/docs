@@ -3,49 +3,42 @@ title: "Create a sub-service"
 description: "Creates a sub-service (add-on / line item) under a parent service. Requires the services.write scope."
 ---
 
-Creates a sub-service in the `sub_services` table and links it to a parent service. Sub-services represent add-ons, line items, or optional extras that belong to a service package. The parent `service_id` must be an existing service in your business.
+Creates a priced item beneath an existing service — a boarding suite size, a grooming package, a transport leg.
 
 **Required scope:** `services.write`
 
 **Base URL:** `https://mex-pet-app.vercel.app/api/v1`
 
-<Tip>
-  Use an `Idempotency-Key` header to safely retry this request without creating duplicate sub-services.
-</Tip>
+## Body parameters
 
-## Body fields
-
-| Field | Type | Required | Description |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `service_id` | string | ✅ | ID of the parent service. Must be an existing service in your business. |
-| `name` | string | ✅ | Sub-service name |
-| `description` | string | — | Full description |
-| `price` | number | — | Price in dollars |
-| `duration_minutes` | integer | — | Estimated duration |
-| `sort_order` | integer | — | Display order (lower = first) |
-| `is_active` | boolean | — | Whether available for selection (default `true`) |
-| `pricing_model` | string | — | `fixed` (default) |
-| `unit_label` | string | — | Label for the unit (e.g. `per dog`, `per hour`) |
+| `name` | string | ✅ | What the customer sees, e.g. `Dog Boarding (5 x 5)` |
+| `service_id` | string | ✅ | The service this belongs under |
+| `description` | string |  | Longer detail. Defaults to `null` |
+| `price` | number |  | Defaults to `0` |
+| `duration_minutes` | integer |  | How long it takes. Defaults to `null` |
+| `sort_order` | integer |  | Position in the list. Defaults to `0` |
+| `is_active` | boolean |  | Defaults to `true` |
+| `pricing_model` | string |  | `fixed` (default) or `per_unit` |
+| `unit_label` | string |  | Names the unit when `pricing_model` is `per_unit` |
 
 <Warning>
-  `service_id` must be an existing service in your business. An invalid ID returns `400 invalid_request_error`.
+  `service_id` must belong to **your** business. A service id from another ranch returns `400 invalid_request_error` — it is not treated as "not found", because the token has no business knowing whether it exists.
 </Warning>
 
 ## Example
 
 ```bash
-curl -X POST https://mex-pet-app.vercel.app/api/v1/sub-services \
+curl -X POST "https://mex-pet-app.vercel.app/api/v1/sub-services" \
   -H "Authorization: Bearer mxp_live_your_token_here" \
   -H "Content-Type: application/json" \
-  -H "Idempotency-Key: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
   -d '{
-    "service_id": "svc_gg7b8c",
-    "name": "Bath & Brush",
-    "description": "Full bath, blow dry, and brush-out.",
-    "price": 39,
-    "duration_minutes": 60,
-    "sort_order": 1,
-    "is_active": true
+    "service_id": "svc_ff6a7b",
+    "name": "Dog Boarding (5 x 5)",
+    "price": 24,
+    "pricing_model": "fixed",
+    "sort_order": 0
   }'
 ```
 
@@ -53,25 +46,25 @@ curl -X POST https://mex-pet-app.vercel.app/api/v1/sub-services \
 
 ```json
 {
-  "id": "sub_aa1b2c",
+  "id": "sub_4c0fcd",
   "object": "sub_service",
-  "service_id": "svc_gg7b8c",
-  "name": "Bath & Brush",
-  "description": "Full bath, blow dry, and brush-out.",
-  "price": 39,
-  "duration_minutes": 60,
-  "sort_order": 1,
+  "service_id": "svc_ff6a7b",
+  "name": "Dog Boarding (5 x 5)",
+  "description": null,
+  "price": 24,
+  "duration_minutes": null,
+  "sort_order": 0,
   "is_active": true,
   "pricing_model": "fixed",
   "unit_label": null,
-  "created_at": "2026-07-09T10:00:00.000Z"
+  "created_at": "2026-01-01T00:00:00.000Z"
 }
 ```
 
-## Error responses
+## Errors
 
-| Status | Code | Meaning |
+| Status | Type | When |
 | --- | --- | --- |
-| `400` | `invalid_request_error` | Missing required field or `service_id` not found in your business |
-| `401` | `authentication_error` | Missing or invalid token |
-| `403` | `permission_error` | Token missing `services.write` scope |
+| `400` | `invalid_request_error` | `name` or `service_id` missing |
+| `400` | `invalid_request_error` | `service_id` is not a service in your business |
+| `403` | `invalid_request_error` | Token lacks the `services.write` scope |
