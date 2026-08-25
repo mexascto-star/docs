@@ -10,6 +10,8 @@ Permanently removes a priced item from your catalog.
 
 **Base URL:** `https://mex-pet-app.vercel.app/api/v1`
 
+To take an item off sale without losing it, use [Update a sub-service](/api-reference/sub-services/update-a-sub-service) with `is_active: false` instead.
+
 <Warning>
   This is a hard delete — the row is removed, not flagged. Existing bookings are unaffected, because a booking stores the name and price it was sold at rather than pointing back at the catalog. But the option disappears from your catalog immediately and cannot be recovered through the API.
 
