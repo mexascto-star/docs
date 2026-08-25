@@ -141,11 +141,6 @@
             "pages": [
               "api-reference/custom-fields/list-custom-fields"
             ]
-          },
-          {
-            "group": "Sub-services",
-            "icon": "layer-group",
-            "pages": []
           }
         ]
       }
