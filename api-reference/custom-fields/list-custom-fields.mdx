@@ -4,7 +4,7 @@ description: "Returns the active custom-field definitions for the token's busine
 openapi: "GET /custom-fields"
 ---
 
-Use this endpoint to discover which custom fields your ranch has configured — the returned `field_key`s are exactly the keys you send in the `custom_fields` object on a contact or pet.
+Use this endpoint to discover which custom fields your ranch has configured — the returned `key` values are exactly the keys you send in the `custom_fields` object on a contact or pet.
 
 **Required scope:** `contacts.read` for `entity_type=customer`, `pets.read` for `entity_type=pet`
 
@@ -16,6 +16,10 @@ Use this endpoint to discover which custom fields your ranch has configured — 
 | --- | --- | --- | --- |
 | `entity_type` | string | ✅ | `customer` or `pet` |
 
+<Warning>
+  `entity_type` is required. Omitting it, or sending any value other than `customer` or `pet`, returns `400 invalid_request_error`.
+</Warning>
+
 ## Example — list customer custom fields
 
 ```bash
@@ -25,34 +29,59 @@ curl "https://mex-pet-app.vercel.app/api/v1/custom-fields?entity_type=customer" 
 
 ## Response `200`
 
+Definitions come back in the order the ranch arranged them, and only the active ones are returned.
+
 ```json
 {
   "object": "list",
+  "entity_type": "customer",
   "data": [
     {
       "id": "cfd_9a2b4c",
-      "object": "custom_field_definition",
-      "entity_type": "customer",
+      "object": "custom_field",
       "name": "Favorite toy",
-      "field_key": "favorite_toy",
+      "key": "favorite_toy",
       "field_type": "text",
       "options": null,
       "is_required": false
     },
     {
       "id": "cfd_1d3e5f",
-      "object": "custom_field_definition",
-      "entity_type": "customer",
+      "object": "custom_field",
       "name": "VIP",
-      "field_key": "vip",
+      "key": "vip",
       "field_type": "checkbox",
       "options": null,
       "is_required": false
     }
-  ]
+  ],
+  "total": 2
 }
 ```
 
+## Response fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `object` | string | Always `list`. |
+| `entity_type` | string | Echoes the `entity_type` you asked for. |
+| `data[].id` | string | Definition id. |
+| `data[].object` | string | Always `custom_field`. |
+| `data[].name` | string | Label the ranch gave the field. |
+| `data[].key` | string | **The key to use** inside `custom_fields`. |
+| `data[].field_type` | string | `text`, `checkbox`, `select`, and so on. |
+| `data[].options` | array \| null | Choices, for option-based field types. Otherwise `null`. |
+| `data[].is_required` | boolean | Whether the ranch marks this field as required in its own UI. |
+| `total` | integer | Number of definitions returned. |
+
+<Note>
+  This list is not paginated — every active definition for the entity type is returned in one response, and `total` is simply the length of `data`. There are no `limit` or `offset` parameters here, unlike the other list endpoints.
+</Note>
+
+## Method support
+
+Only `GET /custom-fields` exists. `POST`, `PATCH` and `DELETE` return `405 invalid_request_error` — custom fields are created and edited by the ranch in the app, not through the API.
+
 <Tip>
-  Send the returned `field_key` values as keys inside `custom_fields` when creating or updating a contact or pet. See the [Custom fields](/custom-fields) concept page for the end-to-end flow.
+  Send the returned `key` values as keys inside `custom_fields` when creating or updating a contact or pet. See the [Custom fields](/custom-fields) concept page for the end-to-end flow.
 </Tip>

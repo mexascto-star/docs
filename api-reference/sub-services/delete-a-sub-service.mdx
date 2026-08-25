@@ -3,16 +3,22 @@ title: "Delete a sub-service"
 description: "Permanently deletes a sub-service. Requires the services.write scope."
 ---
 
-Permanently removes a sub-service. Consider setting `is_active: false` instead to hide it without losing history.
+Permanently removes a priced item from your catalog.
 
 **Required scope:** `services.write`
 
 **Base URL:** `https://mex-pet-app.vercel.app/api/v1`
 
+<Warning>
+  This is a hard delete — the row is removed, not flagged. Existing bookings are unaffected, because a booking stores the name and price it was sold at rather than pointing back at the catalog. But the option disappears from your catalog immediately and cannot be recovered through the API.
+
+  To take something off sale while keeping it, use `PATCH` with `is_active: false` instead.
+</Warning>
+
 ## Example
 
 ```bash
-curl -X DELETE https://mex-pet-app.vercel.app/api/v1/sub-services/sub_bb2c3d \
+curl -X DELETE "https://mex-pet-app.vercel.app/api/v1/sub-services/sub_4c0fcd" \
   -H "Authorization: Bearer mxp_live_your_token_here"
 ```
 
@@ -20,14 +26,15 @@ curl -X DELETE https://mex-pet-app.vercel.app/api/v1/sub-services/sub_bb2c3d \
 
 ```json
 {
-  "id": "sub_bb2c3d",
+  "id": "sub_4c0fcd",
   "object": "sub_service",
   "deleted": true
 }
 ```
 
-## Error responses
+## Errors
 
-| Status | Code | Meaning |
+| Status | Type | When |
 | --- | --- | --- |
-| `404` | `not_found` | Sub-service does not exist in your business |
+| `404` | `not_found` | No sub-service with that id in your business |
+| `403` | `invalid_request_error` | Token lacks the `services.write` scope |
